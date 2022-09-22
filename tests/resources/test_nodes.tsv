@@ -1,0 +1,50 @@
+id	category	name	description	provided_by	iri	knowledge_source	object	predicate	relation	same_as	subject
+bfo:0000019	biolink:NamedThing	quality		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000019
+BEEFO:0000015	biolink:NamedThing	process	p is a process = Def. p is an occurrent that has temporal proper parts and for some time t, p s-depends_on some material entity at t. (axiom label in BFO2 Reference: [083-003])	BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000015
+OBO:BFO:0000016	biolink:NamedThing	disposition		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000016
+BFO:0000017	biolink:NamedThing	realizable entity		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000017
+BFO:0000018	biolink:NamedThing	zero-dimensional spatial region		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000018
+BFO:0000011	biolink:NamedThing	spatiotemporal region		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000011
+IAO:0000116	biolink:NamedThing	editor note		BFO 2019-08-26	http://purl.obolibrary.org/obo/IAO_0000116
+IAO:0000117	biolink:NamedThing	term editor		BFO 2019-08-26	http://purl.obolibrary.org/obo/IAO_0000117
+IAO:0000115	biolink:NamedThing	definition		BFO 2019-08-26	http://purl.obolibrary.org/obo/IAO_0000115
+BFO:0000179	biolink:NamedThing	BFO OWL specification label	Relates an entity in the ontology to the name of the variable that is used to represent it in the code that generates the BFO OWL file from the lispy specification.	BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000179
+IAO:0000112	biolink:NamedThing	example of usage		BFO 2019-08-26	http://purl.obolibrary.org/obo/IAO_0000112
+IAO:0000111	biolink:NamedThing	editor preferred term		BFO 2019-08-26	http://purl.obolibrary.org/obo/IAO_0000111
+IAO:0000232	biolink:NamedThing	curator note		BFO 2019-08-26	http://purl.obolibrary.org/obo/IAO_0000232
+BFO:0000008	biolink:NamedThing	temporal region		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000008
+BFO:0000009	biolink:NamedThing	two-dimensional spatial region		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000009
+BFO:0000004	biolink:NamedThing	independent continuant	b is an independent continuant = Def. b is a continuant which is such that there is no c and no t such that b s-depends_on c at t. (axiom label in BFO2 Reference: [017-002])	BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000004
+IAO:0000118	biolink:NamedThing	alternative term		BFO 2019-08-26	http://purl.obolibrary.org/obo/IAO_0000118
+BFO:0000006	biolink:NamedThing	spatial region		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000006
+IAO:0000119	biolink:NamedThing	definition source		BFO 2019-08-26	http://purl.obolibrary.org/obo/IAO_0000119
+IAO:0010000	biolink:NamedThing	has axiom label		BFO 2019-08-26	http://purl.obolibrary.org/obo/IAO_0010000
+IAO:0000600	biolink:NamedThing	elucidation		BFO 2019-08-26	http://purl.obolibrary.org/obo/IAO_0000600
+BFO:0000001	biolink:NamedThing	entity		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000001
+IAO:0000601	biolink:NamedThing	has associated axiom(nl)		BFO 2019-08-26	http://purl.obolibrary.org/obo/IAO_0000601
+BFO:0000002	biolink:NamedThing	continuant		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000002
+BFO:0000003	biolink:NamedThing	occurrent		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000003
+BFO:0000040	biolink:NamedThing	material entity		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000040
+BFO:0000038	biolink:NamedThing	one-dimensional temporal region		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000038
+IAO:0000602	biolink:NamedThing	has associated axiom(fol)		BFO 2019-08-26	http://purl.obolibrary.org/obo/IAO_0000602
+BFO:0000034	biolink:NamedThing	function		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000034
+BFO:0000035	biolink:NamedThing	process boundary	p is a process boundary =Def. p is a temporal part of a process & p has no proper temporal parts. (axiom label in BFO2 Reference: [084-001])	BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000035
+IAO:0000412	biolink:NamedThing	imported from		BFO 2019-08-26	http://purl.obolibrary.org/obo/IAO_0000412
+BFO:0000030	biolink:NamedThing	object		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000030
+BFO:0000031	biolink:NamedThing	generically dependent continuant	b is a generically dependent continuant = Def. b is a continuant that g-depends_on one or more other entities. (axiom label in BFO2 Reference: [074-001])	BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000031
+BFO:0000026	biolink:NamedThing	one-dimensional spatial region		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000026
+BFO:0000147	biolink:NamedThing	zero-dimensional continuant fiat boundary		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000147
+BFO:0000027	biolink:NamedThing	object aggregate		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000027
+BFO:0000148	biolink:NamedThing	zero-dimensional temporal region		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000148
+BFO:0000028	biolink:NamedThing	three-dimensional spatial region		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000028
+BFO:0000029	biolink:NamedThing	site		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000029
+BFO:0000180	biolink:NamedThing	BFO CLIF specification label	Relates an entity in the ontology to the term that is used to represent it in the the CLIF specification of BFO2	BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000180
+BFO:0000182	biolink:NamedThing	history		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000182
+BFO:0000144	biolink:NamedThing	process profile	b is a process_profile =Def. there is some process c such that b process_profile_of c (axiom label in BFO2 Reference: [093-002])	BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000144
+BFO:0000023	biolink:NamedThing	role		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000023
+BFO:0000145	biolink:NamedThing	relational quality	b is a relational quality = Def. for some independent continuants c, d and for some time t: b quality_of c at t & b quality_of d at t. (axiom label in BFO2 Reference: [057-001])	BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000145
+BFO:0000024	biolink:NamedThing	fiat object part		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000024
+BFO:0000146	biolink:NamedThing	two-dimensional continuant fiat boundary		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000146
+BFO:0000140	biolink:NamedThing	continuant fiat boundary	b is a continuant fiat boundary = Def. b is an immaterial entity that is of zero, one or two dimensions and does not include a spatial region as part. (axiom label in BFO2 Reference: [029-001])	BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000140
+BFO:0000020	biolink:NamedThing	specifically dependent continuant	b is a specifically dependent continuant = Def. b is a continuant & there is some independent continuant c which is not a spatial region and which is such that b s-depends_on c at every time t during the course of b’s existence. (axiom label in BFO2 Reference: [050-003])	BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000020
+owl:Thing	biolink:NamedThing			BFO 2019-08-26							
