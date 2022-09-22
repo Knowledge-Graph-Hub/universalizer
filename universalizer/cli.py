@@ -2,6 +2,7 @@
 
 import click
 
+from universalizer.norm import clean_and_normalize_graph
 
 @click.group()
 def cli():
@@ -21,5 +22,7 @@ def run(input_path: str, compressed: bool) -> None:
     :return: None
     """
     print(f"Input path: {input_path}")
+
+    clean_and_normalize_graph(input_path, compressed)
 
     return None
