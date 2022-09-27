@@ -2,17 +2,22 @@
 
 import os
 import tarfile
+from typing import Dict
+
+from curies import Converter  # type: ignore
+from prefixmaps.io.parser import load_multi_context  # type: ignore
+
 
 def clean_and_normalize_graph(filepath, compressed) -> bool:
     """
     Replace or remove node IDs or nodes as needed.
+
     Also replaces biolink:OntologyClass node types
     with biolink:NamedThing.
     :param filepath: str, name or path of KGX graph files
     :param compressed: bool, True if filepath is tar.gz compressed
     :return: bool, True if successful
     """
-
     success = True
     mapping = True
 
@@ -24,15 +29,17 @@ def clean_and_normalize_graph(filepath, compressed) -> bool:
             graph_files = intar.getnames()
             for graph_file in graph_files:
                 intar.extract(graph_file, path=os.path.dirname(filepath))
-                graph_file_paths.append(os.path.join(os.path.dirname(filepath), graph_file))
+                graph_file_paths.append(
+                    os.path.join(os.path.dirname(filepath), graph_file)
+                )
         os.remove(filepath)
     else:
         for filename in os.listdir(filepath):
             if filename.endswith(".tsv"):
-                graph_file_paths.append(os.path.join(filepath,filename))
-    
+                graph_file_paths.append(os.path.join(filepath, filename))
+
     if len(graph_file_paths) > 2:
-        raise RuntimeError("Found more than the expected number of graph files.")
+        raise RuntimeError("Found more than two graph files.")
     elif len(graph_file_paths) == 0:
         raise RuntimeError("Found no graph files!")
     elif len(graph_file_paths) == 2:
@@ -49,30 +56,16 @@ def clean_and_normalize_graph(filepath, compressed) -> bool:
             edgepath = filepath
             outedgepath = edgepath + ".tmp"
 
-    # Now load the update_id_map file
-    id_map_path = os.path.join(os.path.dirname(filename), "update_id_maps.tsv")
-    if not os.path.exists(id_map_path):
-        print("Can't find ID remapping file. This may not be a problem.")
-        mapping = False
-    else:
-        remap_these_nodes = {}
-        with open(id_map_path) as map_file:
-            map_file.readline()
-            for line in map_file:
-                splitline = line.rstrip().split("\t")
-                cap_prefix = (
-                    ((splitline[0].split(":"))[0].upper())
-                    + ":"
-                    + (splitline[0].split(":"))[1]
-                )
-                remap_these_nodes[splitline[0]] = splitline[1]
-                remap_these_nodes[cap_prefix] = splitline[1]
+    # Now create the set of mappings to perform
+
+    remap_these_nodes = make_id_maps(nodepath, os.path.dirname(nodepath))
 
     # Continue with mapping if everything's OK so far
     # Sometimes prefixes get capitalized, so we check for that too
     try:
         mapcount = 0
-        with open(nodepath, "r") as innodefile, open(edgepath, "r") as inedgefile:
+        with open(nodepath, "r") as innodefile, \
+                open(edgepath, "r") as inedgefile:
             with open(outnodepath, "w") as outnodefile, open(
                 outedgepath, "w"
             ) as outedgefile:
@@ -97,7 +90,8 @@ def clean_and_normalize_graph(filepath, compressed) -> bool:
                         # Check for edges containing nodes to be remapped
                         for col in [1, 3]:
                             if line_split[col] in remap_these_nodes:
-                                new_node_id = remap_these_nodes[line_split[col]]
+                                new_node_id = \
+                                    remap_these_nodes[line_split[col]]
                                 line_split[col] = new_node_id
                                 mapcount = mapcount + 1
                                 line = "\t".join(line_split) + "\n"
@@ -106,15 +100,113 @@ def clean_and_normalize_graph(filepath, compressed) -> bool:
         os.replace(outnodepath, nodepath)
         os.replace(outedgepath, edgepath)
 
-        if mapping and mapcount > 0:
+        if mapcount > 0:
             print(f"Remapped {mapcount} node IDs.")
-        elif mapping and mapcount == 0:
-            print("Failed to remap node IDs - could not find corresponding nodes.")
-        
+        elif mapcount == 0:
+            print("Could not remap any node IDs.")
+
         success = True
 
     except (IOError, KeyError) as e:
-        print(f"Failed to remap node IDs for {nodepath} and/or {edgepath}: {e}")
+        print(f"Failed to remap node IDs: {e}")
         success = False
 
     return success
+
+
+def make_id_maps(input_nodes: str, output_dir: str) -> dict:
+    """
+    Retrieve all entity identifiers for a single graph.
+
+    Report all identifiers of expected and unexpected format,
+    and find more appropriate prefixes if possible.
+    Does not rewrite IRIs.
+    :param input_nodes: Path to input nodefile
+    :param output_dir: string of directory, location of unexpected id
+    and update map file to be created
+    :return: dict, map of original node IDs to new node IDs
+    """
+    id_list = []
+    mal_id_list = []
+    update_ids: Dict[str, str] = {}
+
+    # TODO: provide more configuration re: curie contexts
+    # TODO: expand reverse contexts beyond bijective maps
+    # TODO: add more capitalization variants
+
+    curie_contexts = load_multi_context(["obo", "bioregistry.upper"])
+    all_contexts = curie_contexts.as_dict()
+    all_contexts = {key: val for key, val in all_contexts.items()}
+    curie_converter = Converter.from_prefix_map(all_contexts)
+
+    all_reverse_contexts = {val: key for key, val in all_contexts.items()}
+    all_reverse_contexts_lc = {val.lower(): key for key, val
+                               in all_contexts.items()}
+    all_reverse_contexts.update(all_reverse_contexts_lc)
+    iri_converter = Converter.from_reverse_prefix_map(all_reverse_contexts)
+
+    print(f"Retrieving entity names in {input_nodes}...")
+
+    mal_id_file_name = os.path.join(output_dir, "unexpected_ids.tsv")
+    update_mapfile_name = os.path.join(output_dir, "update_id_maps.tsv")
+
+    with open(input_nodes, "r") as nodefile:
+        nodefile.readline()
+        for line in nodefile:
+            id_list.append((line.rstrip().split("\t"))[0])
+
+    # For each id, assume it is a CURIE and try to convert to IRI.
+    # If that doesn't work, it might be an IRI - try to
+    # convert it to a CURIE. If that works, we need to update it.
+    # Also checks if IDs with OBO prefixes should be something else.
+    try:
+        for identifier in id_list:
+            # See if there's an OBO prefix
+            if (identifier.split(":"))[0].upper() == "OBO":
+                mal_id_list.append(identifier)
+                new_id = ((identifier[4:]).replace("_", ":")).upper()
+                # and check to see if this is referencing an owl file
+                # if so, try to remove
+                if ".OWL" in new_id:
+                    split_new_id = new_id.split(".OWL")
+                    new_id = split_new_id[1]
+                # May still have a char left over. Remove.
+                if new_id[0] in ["/", "#"]:
+                    new_id = new_id[1:]
+                update_ids[identifier] = new_id
+                continue
+            try:
+                assert curie_converter.expand(identifier)
+            except AssertionError:
+                mal_id_list.append(identifier)
+                new_id = iri_converter.compress(identifier)  # type: ignore
+                if new_id:
+                    if new_id[0].islower():  # Need to capitalize
+                        split_id = new_id.split(":")
+                        new_id = f"{split_id[0].upper()}:{split_id[1]}"
+                    update_ids[identifier] = new_id
+    except IndexError:
+        mal_id_list.append(identifier)
+
+    mal_id_list_len = len(mal_id_list)
+    if mal_id_list_len > 0:
+        print(f"Found {mal_id_list_len} unexpected identifiers.")
+        with open(mal_id_file_name, "w") as idfile:
+            idfile.write("ID\n")
+            for identifier in mal_id_list:
+                idfile.write(f"{identifier}\n")
+    else:
+        print(f"All identifiers in {input_nodes} are as expected.")
+
+    update_id_len = len(update_ids)
+    if update_id_len > 0:
+        print(f"Will normalize {update_id_len} identifiers.")
+        with open(update_mapfile_name, "w") as mapfile:
+            mapfile.write("Old ID\tNew ID\n")
+            for identifier in update_ids:
+                mapfile.write(f"{identifier}\t{update_ids[identifier]}\n")
+            print(f"Wrote IRI maps to {update_mapfile_name}.")
+    else:
+        print(f"No identifiers in {input_nodes} will be normalized.")
+
+    return update_ids
