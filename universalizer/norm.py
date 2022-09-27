@@ -64,7 +64,8 @@ def clean_and_normalize_graph(filepath, compressed) -> bool:
     # Sometimes prefixes get capitalized, so we check for that too
     try:
         mapcount = 0
-        with open(nodepath, "r") as innodefile, open(edgepath, "r") as inedgefile:
+        with open(nodepath, "r") as innodefile, \
+                open(edgepath, "r") as inedgefile:
             with open(outnodepath, "w") as outnodefile, open(
                 outedgepath, "w"
             ) as outedgefile:
@@ -89,7 +90,8 @@ def clean_and_normalize_graph(filepath, compressed) -> bool:
                         # Check for edges containing nodes to be remapped
                         for col in [1, 3]:
                             if line_split[col] in remap_these_nodes:
-                                new_node_id = remap_these_nodes[line_split[col]]
+                                new_node_id = \
+                                    remap_these_nodes[line_split[col]]
                                 line_split[col] = new_node_id
                                 mapcount = mapcount + 1
                                 line = "\t".join(line_split) + "\n"
@@ -139,7 +141,8 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
     curie_converter = Converter.from_prefix_map(all_contexts)
 
     all_reverse_contexts = {val: key for key, val in all_contexts.items()}
-    all_reverse_contexts_lc = {val.lower(): key for key, val in all_contexts.items()}
+    all_reverse_contexts_lc = {val.lower(): key for key, val
+                               in all_contexts.items()}
     all_reverse_contexts.update(all_reverse_contexts_lc)
     iri_converter = Converter.from_reverse_prefix_map(all_reverse_contexts)
 
