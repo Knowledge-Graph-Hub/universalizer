@@ -4,6 +4,7 @@ from unittest import TestCase
 
 from universalizer.norm import clean_and_normalize_graph
 
+
 class TestNorm(TestCase):
     """Test graph cleaning and normalization functions."""
 
@@ -14,5 +15,6 @@ class TestNorm(TestCase):
 
     def test_clean_and_normalize_graph(self):
         """Test clean_and_normalize_graph."""
-        clean_and_normalize_graph(self.test_graph_path, 
-                                  compressed=False)
+        self.assertTrue(
+            clean_and_normalize_graph(self.test_graph_path, compressed=False)
+        )
