@@ -9,6 +9,7 @@ class TestNorm(TestCase):
     """Test graph cleaning and normalization functions."""
 
     def setUp(self) -> None:
+        """Set up."""
         self.test_graph_path = "tests/resources/"
         self.test_graph_path_nodes = "tests/resources/test_nodes.tsv"
         self.test_graph_path_edges = "tests/resources/test_edges.tsv"
