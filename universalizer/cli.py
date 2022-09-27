@@ -23,6 +23,7 @@ def run(input_path: str, compressed: bool) -> None:
     """
     print(f"Input path: {input_path}")
 
-    clean_and_normalize_graph(input_path, compressed)
+    if clean_and_normalize_graph(input_path, compressed):
+        print("Complete.")
 
     return None

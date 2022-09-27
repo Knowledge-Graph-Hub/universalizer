@@ -1,6 +1,5 @@
 """Node cleaning and normalization functions."""
 
-import glob
 import os
 import tarfile
 
@@ -28,15 +27,16 @@ def clean_and_normalize_graph(filepath, compressed) -> bool:
                 graph_file_paths.append(os.path.join(os.path.dirname(filepath), graph_file))
         os.remove(filepath)
     else:
-        all_files = glob.glob(filepath)
-        for filename in all_files:
+        for filename in os.listdir(filepath):
             if filename.endswith(".tsv"):
-                graph_file_paths.append(filename)
+                graph_file_paths.append(os.path.join(filepath,filename))
     
-    print(f"Found these graph files:{graph_file_paths}")
-
     if len(graph_file_paths) > 2:
         raise RuntimeError("Found more than the expected number of graph files.")
+    elif len(graph_file_paths) == 0:
+        raise RuntimeError("Found no graph files!")
+    elif len(graph_file_paths) == 2:
+        print(f"Found these graph files:{graph_file_paths}")
 
     # Remap node IDs
     # First, identify node and edge lists
@@ -115,14 +115,6 @@ def clean_and_normalize_graph(filepath, compressed) -> bool:
 
     except (IOError, KeyError) as e:
         print(f"Failed to remap node IDs for {nodepath} and/or {edgepath}: {e}")
-        for temppath in [outnodepath, outedgepath]:
-            os.remove(temppath)
         success = False
-
-    # Recompress graph
-    with tarfile.open(filename, "w:gz") as outtar:
-        for graph_file in graph_file_paths:
-            outtar.add(graph_file, arcname=os.path.basename(graph_file))
-            os.remove(graph_file)
 
     return success
