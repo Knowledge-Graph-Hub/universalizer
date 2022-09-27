@@ -11,13 +11,13 @@ from prefixmaps.io.parser import load_multi_context  # type: ignore
 def clean_and_normalize_graph(filepath, compressed) -> bool:
     """
     Replace or remove node IDs or nodes as needed.
+
     Also replaces biolink:OntologyClass node types
     with biolink:NamedThing.
     :param filepath: str, name or path of KGX graph files
     :param compressed: bool, True if filepath is tar.gz compressed
     :return: bool, True if successful
     """
-
     success = True
     mapping = True
 
@@ -126,7 +126,6 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
     and update map file to be created
     :return: dict, map of original node IDs to new node IDs
     """
-
     id_list = []
     mal_id_list = []
     update_ids: Dict[str, str] = {}
