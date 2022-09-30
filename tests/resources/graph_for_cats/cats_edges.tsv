@@ -1,0 +1,11 @@
+id	subject	predicate	object	category	relation	provided_by	primary_knowledge_source
+1	OGG:3000002307	biolink:related_to	skos:example			test	test
+2	OGG:3000002306	biolink:related_to	skos:example			test	test
+3	OGG:3000002309	biolink:related_to	skos:example		test	test
+4	OGG:3000002308	biolink:related_to	skos:example			test	test
+5	OGG:3000002303	biolink:related_to	skos:example			test	test
+6	OGG:3000002302	biolink:related_to	skos:example			test	test
+7	OGG:3000002305	biolink:related_to	skos:example			test	test
+8	OGG:3000002304	biolink:related_to	skos:example			test	test
+9	OGG:3000081706	biolink:related_to	skos:definition			test	test
+10	OGG:3000139628	biolink:related_to	skos:definition			test	test
