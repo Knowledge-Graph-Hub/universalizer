@@ -41,4 +41,8 @@ univeralizer run -m path/to/mapfiles path/to/directory
 
 For SSSOM maps from `subject_id` to `object_id`, subject node IDs will be remapped to object IDs.
 
-If the `object_id` is a Biolink category ID, however, the node's category ID will be remapped instead of its URI.
+If the `category` value is specified the node's category ID will be remapped as well.
+
+Note that this will complete node normalization *and* ID remapping. 
+
+Maps should use the normalized form (e.g., specify "FBbt:00005201", not "FBBT:00005201", even if the latter form is in the input graph.)
