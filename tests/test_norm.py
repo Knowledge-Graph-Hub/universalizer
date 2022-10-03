@@ -11,10 +11,12 @@ class TestNorm(TestCase):
     def setUp(self) -> None:
         """Set up."""
         self.test_graph_path = "tests/resources/graph_simple_test/"
-        self.test_graph_path_nodes = \
-            "tests/resources/graph_simple_test/test_nodes.tsv"
-        self.test_graph_path_edges = \
-            "tests/resources/graph_simple_test/test_edges.tsv"
+        self.id_graph_path = "tests/resources/graph_for_ids/"
+        self.cat_graph_path = "tests/resources/graph_for_cats/"
+        self.map_paths = [
+            "tests/resources/mappings/ogg-gene-test-0.1.sssom.tsv",
+            "tests/resources/mappings/skos-biolink_cats-all-1.0.sssom.tsv",
+        ]
 
     def test_clean_and_normalize_graph(self):
         """Test clean_and_normalize_graph."""
@@ -22,4 +24,20 @@ class TestNorm(TestCase):
             clean_and_normalize_graph(self.test_graph_path,
                                       compressed=False,
                                       maps=[])
+        )
+
+    def test_sssom_node_remap(self):
+        """Test remapping nodes with SSSOM maps."""
+        self.assertTrue(
+            clean_and_normalize_graph(self.id_graph_path,
+                                      compressed=False,
+                                      maps=self.map_paths)
+        )
+
+    def test_sssom_cat_remap(self):
+        """Test remapping categories with SSSOM maps."""
+        self.assertTrue(
+            clean_and_normalize_graph(self.cat_graph_path,
+                                      compressed=False,
+                                      maps=self.map_paths)
         )
