@@ -56,6 +56,7 @@ def clean_and_normalize_graph(filepath, compressed, maps) -> bool:
         using_sssom = True
         print(f"Found these map files:{maps}")
         remaps, recats = load_sssom_maps(maps)
+        print(recats)
 
     # Remap node IDs
     # First, identify node and edge lists
@@ -94,10 +95,10 @@ def clean_and_normalize_graph(filepath, compressed, maps) -> bool:
                             changed_this_line = True
                             line = "\t".join(line_split) + "\n"
                         if using_sssom:
-                            if line_split[0] in remaps:
-                                line_split[0] = remaps[line_split[0]]
                             if line_split[0] in recats:
                                 line_split[1] = recats[line_split[0]]
+                            if line_split[0] in remaps:
+                                line_split[0] = remaps[line_split[0]]
                             changed_this_line = True
                             line = "\t".join(line_split) + "\n"
                     if line_split[1] == "biolink:OntologyClass":
