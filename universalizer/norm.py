@@ -259,11 +259,11 @@ def load_sssom_maps(maps) -> tuple:
     # Convert the SSSOM maps to two dicts
     id_map = {}
     cat_map = {}
-    for i, row in all_maps.df.iterrows():
+    for _, row in all_maps.df.iterrows():
         subj = None
         obj = None
         obj_cat = None
-        for k, v in row.iteritems():
+        for k, v in row.items():
             if k == 'subject_id':
                 subj = v
             if k == 'object_id':
