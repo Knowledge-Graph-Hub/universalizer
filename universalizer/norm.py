@@ -50,13 +50,12 @@ def clean_and_normalize_graph(filepath, compressed, maps) -> bool:
 
     # Load SSSOM maps if provided.
     # Merge them together.
-    using_maps = False
+    using_sssom = False
 
     if len(maps) > 0:
-        using_maps = True
+        using_sssom = True
         print(f"Found these map files:{maps}")
         remaps, recats = load_sssom_maps(maps)
-        print(remaps)
 
     # Remap node IDs
     # First, identify node and edge lists
@@ -85,17 +84,27 @@ def clean_and_normalize_graph(filepath, compressed, maps) -> bool:
                 outnodefile.write(innodefile.readline())
                 outedgefile.write(inedgefile.readline())
                 for line in innodefile:
+                    changed_this_line = False
                     line_split = (line.rstrip()).split("\t")
                     if mapping:
                         # Check for nodes to be remapped
                         if line_split[0] in remap_these_nodes:
                             new_node_id = remap_these_nodes[line_split[0]]
                             line_split[0] = new_node_id
-                            mapcount = mapcount + 1
+                            changed_this_line = True
+                            line = "\t".join(line_split) + "\n"
+                        if using_sssom:
+                            if line_split[0] in remaps:
+                                line_split[0] = remaps[line_split[0]]
+                            if line_split[0] in recats:
+                                line_split[1] = recats[line_split[0]]
+                            changed_this_line = True
                             line = "\t".join(line_split) + "\n"
                     if line_split[1] == "biolink:OntologyClass":
                         line_split[1] = "biolink:NamedThing"
                         line = "\t".join(line_split) + "\n"
+                    if changed_this_line:
+                        mapcount = mapcount + 1
                     outnodefile.write(line)
                 for line in inedgefile:
                     line_split = (line.rstrip()).split("\t")
@@ -106,8 +115,13 @@ def clean_and_normalize_graph(filepath, compressed, maps) -> bool:
                                 new_node_id = \
                                     remap_these_nodes[line_split[col]]
                                 line_split[col] = new_node_id
-                                mapcount = mapcount + 1
                                 line = "\t".join(line_split) + "\n"
+                            if using_sssom:
+                                if line_split[col] in remaps:
+                                    new_node_id = \
+                                        remaps[line_split[col]]
+                                    line_split[col] = new_node_id
+                                    line = "\t".join(line_split) + "\n"
                     outedgefile.write(line)
 
         os.replace(outnodepath, nodepath)
