@@ -55,12 +55,8 @@ def clean_and_normalize_graph(filepath, compressed, maps) -> bool:
     if len(maps) > 0:
         using_maps = True
         print(f"Found these map files:{maps}")
-
-        all_maps = MappingSetDataFrame()
-        for filepath in maps:
-            msdf = read_sssom_table(filepath)
-            all_maps = all_maps.merge(msdf)
-        print(all_maps)
+        remaps, recats = load_sssom_maps(maps)
+        print(remaps)
 
     # Remap node IDs
     # First, identify node and edge lists
@@ -72,8 +68,6 @@ def clean_and_normalize_graph(filepath, compressed, maps) -> bool:
         if filepath.endswith("edges.tsv"):
             edgepath = filepath
             outedgepath = edgepath + ".tmp"
-
-
 
     # Now create the set of mappings to perform
 
@@ -229,3 +223,42 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
         print(f"No identifiers in {input_nodes} will be normalized.")
 
     return update_ids
+
+
+def load_sssom_maps(maps) -> tuple:
+    """
+    Load all provided SSSOM maps.
+
+    :param maps: a list of paths to SSSOM maps
+    :return: tuple of dicts,
+    first is all subject_id:object_id,
+    second is all subject_id:object_category
+    """
+    all_maps = MappingSetDataFrame()
+    for filepath in maps:
+        msdf = read_sssom_table(filepath)
+        all_maps = all_maps.merge(msdf)
+    all_maps.clean_prefix_map()
+
+    # Convert the SSSOM maps to two dicts
+    id_map = {}
+    cat_map = {}
+    for i, row in all_maps.df.iterrows():
+        subj = None
+        obj = None
+        obj_cat = None
+        for k, v in row.iteritems():
+            if k == 'subject_id':
+                subj = v
+            if k == 'object_id':
+                obj = v
+            if k == 'object_category':
+                obj_cat = v
+            if subj and obj and subj != obj:
+                id_map[subj] = obj
+            if subj and obj_cat:
+                cat_map[subj] = obj_cat
+    print(f"Loaded {len(id_map)} id mappings.")
+    print(f"Loaded {len(cat_map)} category mappings.")
+
+    return (id_map, cat_map)
