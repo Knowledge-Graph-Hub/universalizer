@@ -8,7 +8,7 @@ from curies import Converter  # type: ignore
 from prefixmaps.io.parser import load_multi_context  # type: ignore
 
 
-def clean_and_normalize_graph(filepath, compressed) -> bool:
+def clean_and_normalize_graph(filepath, compressed, maps) -> bool:
     """
     Replace or remove node IDs or nodes as needed.
 
@@ -16,6 +16,7 @@ def clean_and_normalize_graph(filepath, compressed) -> bool:
     with biolink:NamedThing.
     :param filepath: str, name or path of KGX graph files
     :param compressed: bool, True if filepath is tar.gz compressed
+    :param maps: list of str filepaths to SSSOM maps
     :return: bool, True if successful
     """
     success = True
@@ -55,6 +56,10 @@ def clean_and_normalize_graph(filepath, compressed) -> bool:
         if filepath.endswith("edges.tsv"):
             edgepath = filepath
             outedgepath = edgepath + ".tmp"
+
+    # Load SSSOM maps if provided
+    if len(maps) > 0:
+        print(maps)
 
     # Now create the set of mappings to perform
 
