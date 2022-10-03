@@ -6,6 +6,8 @@ from typing import Dict
 
 from curies import Converter  # type: ignore
 from prefixmaps.io.parser import load_multi_context  # type: ignore
+from sssom.parsers import read_sssom_table  # type: ignore
+from sssom.util import MappingSetDataFrame  # type: ignore
 
 
 def clean_and_normalize_graph(filepath, compressed, maps) -> bool:
@@ -46,6 +48,20 @@ def clean_and_normalize_graph(filepath, compressed, maps) -> bool:
     elif len(graph_file_paths) == 2:
         print(f"Found these graph files:{graph_file_paths}")
 
+    # Load SSSOM maps if provided.
+    # Merge them together.
+    using_maps = False
+
+    if len(maps) > 0:
+        using_maps = True
+        print(f"Found these map files:{maps}")
+
+        all_maps = MappingSetDataFrame()
+        for filepath in maps:
+            msdf = read_sssom_table(filepath)
+            all_maps = all_maps.merge(msdf)
+        print(all_maps)
+
     # Remap node IDs
     # First, identify node and edge lists
 
@@ -57,9 +73,7 @@ def clean_and_normalize_graph(filepath, compressed, maps) -> bool:
             edgepath = filepath
             outedgepath = edgepath + ".tmp"
 
-    # Load SSSOM maps if provided
-    if len(maps) > 0:
-        print(maps)
+
 
     # Now create the set of mappings to perform
 
