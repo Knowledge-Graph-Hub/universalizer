@@ -1,7 +1,7 @@
 id	category	name	description	provided_by	iri	knowledge_source	object	predicate	relation	same_as	subject
 bfo:0000019	biolink:NamedThing	quality		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000019
 BEEFO:0000015	biolink:NamedThing	process	p is a process = Def. p is an occurrent that has temporal proper parts and for some time t, p s-depends_on some material entity at t. (axiom label in BFO2 Reference: [083-003])	BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000015
-OBO:BFO:0000016	biolink:NamedThing	disposition		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000016
+BFO:0000016	biolink:NamedThing	disposition		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000016
 BFO:0000017	biolink:NamedThing	realizable entity		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000017
 BFO:0000018	biolink:NamedThing	zero-dimensional spatial region		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000018
 BFO:0000011	biolink:NamedThing	spatiotemporal region		BFO 2019-08-26	http://purl.obolibrary.org/obo/BFO_0000011
