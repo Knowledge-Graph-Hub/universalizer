@@ -1,0 +1,13 @@
+id	category	name	description	provided_by
+OGG:3000002307	biolink:NamedThing	FOXS1		Ontology of Genes and Genomes
+OGG:3000002306	biolink:NamedThing	FOXD2		Ontology of Genes and Genomes
+OGG:3000002309	biolink:NamedThing	FOXO3		Ontology of Genes and Genomes
+OGG:3000002308	biolink:NamedThing	FOXO1		Ontology of Genes and Genomes
+OGG:3000002303	biolink:NamedThing	FOXC2		Ontology of Genes and Genomes
+OGG:3000002302	biolink:NamedThing	FOXJ1		Ontology of Genes and Genomes
+OGG:3000002305	biolink:NamedThing	FOXM1		Ontology of Genes and Genomes
+OGG:3000002304	biolink:NamedThing	FOXE1		Ontology of Genes and Genomes
+OGG:3000081706	biolink:NamedThing	PPP1R14C		Ontology of Genes and Genomes
+OGG:3000139628	biolink:NamedThing	FOXR2		Ontology of Genes and Genomes
+FOODON:03411481	biolink:OrganismalEntity	antelope		Food Ontology
+FOODON:03413367	biolink:OrganismalEntity	zebu		Food Ontology

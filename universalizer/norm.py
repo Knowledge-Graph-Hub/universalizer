@@ -6,9 +6,11 @@ from typing import Dict
 
 from curies import Converter  # type: ignore
 from prefixmaps.io.parser import load_multi_context  # type: ignore
+from sssom.parsers import parse_sssom_table  # type: ignore
+from sssom.util import MappingSetDataFrame  # type: ignore
 
 
-def clean_and_normalize_graph(filepath, compressed) -> bool:
+def clean_and_normalize_graph(filepath, compressed, maps) -> bool:
     """
     Replace or remove node IDs or nodes as needed.
 
@@ -16,6 +18,7 @@ def clean_and_normalize_graph(filepath, compressed) -> bool:
     with biolink:NamedThing.
     :param filepath: str, name or path of KGX graph files
     :param compressed: bool, True if filepath is tar.gz compressed
+    :param maps: list of str filepaths to SSSOM maps
     :return: bool, True if successful
     """
     success = True
@@ -45,6 +48,16 @@ def clean_and_normalize_graph(filepath, compressed) -> bool:
     elif len(graph_file_paths) == 2:
         print(f"Found these graph files:{graph_file_paths}")
 
+    # Load SSSOM maps if provided.
+    # Merge them together.
+    using_sssom = False
+
+    if len(maps) > 0:
+        using_sssom = True
+        print(f"Found these map files:{maps}")
+        remaps, recats = load_sssom_maps(maps)
+        print(recats)
+
     # Remap node IDs
     # First, identify node and edge lists
 
@@ -72,17 +85,28 @@ def clean_and_normalize_graph(filepath, compressed) -> bool:
                 outnodefile.write(innodefile.readline())
                 outedgefile.write(inedgefile.readline())
                 for line in innodefile:
+                    changed_this_line = False
                     line_split = (line.rstrip()).split("\t")
                     if mapping:
                         # Check for nodes to be remapped
                         if line_split[0] in remap_these_nodes:
                             new_node_id = remap_these_nodes[line_split[0]]
                             line_split[0] = new_node_id
-                            mapcount = mapcount + 1
+                            changed_this_line = True
+                            line = "\t".join(line_split) + "\n"
+                        if using_sssom:
+                            if line_split[0] in recats:
+                                line_split[1] = recats[line_split[0]]
+                                changed_this_line = True
+                            if line_split[0] in remaps:
+                                line_split[0] = remaps[line_split[0]]
+                                changed_this_line = True
                             line = "\t".join(line_split) + "\n"
                     if line_split[1] == "biolink:OntologyClass":
                         line_split[1] = "biolink:NamedThing"
                         line = "\t".join(line_split) + "\n"
+                    if changed_this_line:
+                        mapcount = mapcount + 1
                     outnodefile.write(line)
                 for line in inedgefile:
                     line_split = (line.rstrip()).split("\t")
@@ -93,8 +117,13 @@ def clean_and_normalize_graph(filepath, compressed) -> bool:
                                 new_node_id = \
                                     remap_these_nodes[line_split[col]]
                                 line_split[col] = new_node_id
-                                mapcount = mapcount + 1
                                 line = "\t".join(line_split) + "\n"
+                            if using_sssom:
+                                if line_split[col] in remaps:
+                                    new_node_id = \
+                                        remaps[line_split[col]]
+                                    line_split[col] = new_node_id
+                                    line = "\t".join(line_split) + "\n"
                     outedgefile.write(line)
 
         os.replace(outnodepath, nodepath)
@@ -210,3 +239,42 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
         print(f"No identifiers in {input_nodes} will be normalized.")
 
     return update_ids
+
+
+def load_sssom_maps(maps) -> tuple:
+    """
+    Load all provided SSSOM maps.
+
+    :param maps: a list of paths to SSSOM maps
+    :return: tuple of dicts,
+    first is all subject_id:object_id,
+    second is all subject_id:object_category
+    """
+    all_maps = MappingSetDataFrame()
+    for filepath in maps:
+        msdf = parse_sssom_table(filepath)
+        all_maps = all_maps.merge(msdf)
+    all_maps.clean_prefix_map()
+
+    # Convert the SSSOM maps to two dicts
+    id_map = {}
+    cat_map = {}
+    for _, row in all_maps.df.iterrows():
+        subj = None
+        obj = None
+        obj_cat = None
+        for k, v in row.items():
+            if k == 'subject_id':
+                subj = v
+            if k == 'object_id':
+                obj = v
+            if k == 'object_category':
+                obj_cat = v
+            if subj and obj and subj != obj:
+                id_map[subj] = obj
+            if subj and obj_cat:
+                cat_map[subj] = obj_cat
+    print(f"Loaded {len(id_map)} id mappings.")
+    print(f"Loaded {len(cat_map)} category mappings.")
+
+    return (id_map, cat_map)
