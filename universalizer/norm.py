@@ -97,9 +97,10 @@ def clean_and_normalize_graph(filepath, compressed, maps) -> bool:
                         if using_sssom:
                             if line_split[0] in recats:
                                 line_split[1] = recats[line_split[0]]
+                                changed_this_line = True
                             if line_split[0] in remaps:
                                 line_split[0] = remaps[line_split[0]]
-                            changed_this_line = True
+                                changed_this_line = True
                             line = "\t".join(line_split) + "\n"
                     if line_split[1] == "biolink:OntologyClass":
                         line_split[1] = "biolink:NamedThing"
