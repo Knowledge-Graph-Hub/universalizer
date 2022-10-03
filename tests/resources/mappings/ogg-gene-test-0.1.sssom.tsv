@@ -1,4 +1,4 @@
-subject_id	category	predicate_id	object_id	mapping_justification	subject_label	object_label	author_id	reviewer_id	comment
-OGG:3000115653	biolink:Gene	skos:exactMatch	NCBIGene:115653	sio:SIO_000137	KIR3DL3	KIR3DL3 - killer cell immunoglobulin like receptor, three Ig domains and long cytoplasmic tail 3	orcid:0000-0001-5705-7831	orcid:0000-0001-5705-7831	
-OGG:3000081706	biolink:Gene	skos:exactMatch	NCBIGene:81706	sio:SIO_000137	PPP1R14C	PPP1R14C - protein phosphatase 1 regulatory inhibitor subunit 14C	orcid:0000-0001-5705-7831	orcid:0000-0001-5705-7831	
-OGG:3000139628	biolink:Gene	skos:exactMatch	NCBIGene:139628	sio:SIO_000137	FOXR2	FOXR2 - forkhead box R2	orcid:0000-0001-5705-7831	orcid:0000-0001-5705-7831	
+subject_id	subject_category	predicate_id	object_id	object_category	mapping_justification	subject_label	object_label	author_id	reviewer_id	comment
+OGG:3000115653	biolink:NamedThing	skos:exactMatch	NCBIGene:115653	biolink:Gene	sio:SIO_000137	KIR3DL3	KIR3DL3 - killer cell immunoglobulin like receptor, three Ig domains and long cytoplasmic tail 3	orcid:0000-0001-5705-7831	orcid:0000-0001-5705-7831	
+OGG:3000081706	biolink:NamedThing	skos:exactMatch	NCBIGene:81706	biolink:Gene	sio:SIO_000137	PPP1R14C	PPP1R14C - protein phosphatase 1 regulatory inhibitor subunit 14C	orcid:0000-0001-5705-7831	orcid:0000-0001-5705-7831	
+OGG:3000139628	biolink:NamedThing	skos:exactMatch	NCBIGene:139628	biolink:Gene	sio:SIO_000137	FOXR2	FOXR2 - forkhead box R2	orcid:0000-0001-5705-7831	orcid:0000-0001-5705-7831	
