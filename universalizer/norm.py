@@ -6,7 +6,7 @@ from typing import Dict
 
 from curies import Converter  # type: ignore
 from prefixmaps.io.parser import load_multi_context  # type: ignore
-from sssom.parsers import read_sssom_table  # type: ignore
+from sssom.parsers import parse_sssom_table  # type: ignore
 from sssom.util import MappingSetDataFrame  # type: ignore
 
 
@@ -252,7 +252,7 @@ def load_sssom_maps(maps) -> tuple:
     """
     all_maps = MappingSetDataFrame()
     for filepath in maps:
-        msdf = read_sssom_table(filepath)
+        msdf = parse_sssom_table(filepath)
         all_maps = all_maps.merge(msdf)
     all_maps.clean_prefix_map()
 
