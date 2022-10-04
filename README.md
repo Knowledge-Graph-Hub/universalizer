@@ -4,7 +4,16 @@ The KG-Hub Universalizer provides functions for knowledge graph cleanup and iden
 
 ## Installation
 
+Install with `pip`:
+
+```
+pip install universalizer
+```
+
+OR
+
 Install with Poetry.
+
 ```
 git clone https://github.com/Knowledge-Graph-Hub/universalizer.git
 cd universalizer
