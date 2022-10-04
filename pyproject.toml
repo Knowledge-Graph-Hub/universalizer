@@ -4,6 +4,16 @@ version = "0.0.1"
 description = "Provides functions for knowledge graph cleanup and identifier normalization."
 authors = ["caufieldjh <j.harry.caufield@gmail.com>"]
 license = "BSD-3"
+readme = "README.md"
+keywords = ["kg-hub", "knowledgegraphs", "ontology"]
+repository = "https://github.com/Knowledge-Graph-Hub/universalizer"
+include = [
+    "LICENSE",
+]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Science/Research"
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
