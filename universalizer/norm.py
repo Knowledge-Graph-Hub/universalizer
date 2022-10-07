@@ -2,7 +2,7 @@
 
 import os
 import tarfile
-from typing import Dict
+from typing import Dict, Tuple
 
 from curies import Converter  # type: ignore
 from prefixmaps.io.parser import load_multi_context  # type: ignore
@@ -17,8 +17,6 @@ def clean_and_normalize_graph(filepath,
     """
     Replace or remove node IDs or nodes as needed.
 
-    Also replaces biolink:OntologyClass node types
-    with biolink:NamedThing.
     :param filepath: str, name or path of KGX graph files
     :param compressed: bool, True if filepath is tar.gz compressed
     :param maps: list of str filepaths to SSSOM maps
@@ -74,7 +72,13 @@ def clean_and_normalize_graph(filepath,
 
     # Now create the set of mappings to perform
 
-    remap_these_nodes = make_id_maps(nodepath, os.path.dirname(nodepath))
+    remap_these_nodes = make_id_maps(nodepath,
+                                     os.path.dirname(nodepath))
+    if update_categories:
+        remap_these_categories, \
+            remove_these_edges = make_cat_maps(nodepath,
+                                               edgepath,
+                                               os.path.dirname(nodepath))
 
     # Continue with mapping if everything's OK so far
     # Sometimes prefixes get capitalized, so we check for that too
@@ -97,6 +101,12 @@ def clean_and_normalize_graph(filepath,
                             line_split[0] = new_node_id
                             changed_this_line = True
                             line = "\t".join(line_split) + "\n"
+                        if line_split[0] in remap_these_categories:
+                            new_node_cat = \
+                                remap_these_categories[line_split[0]]
+                            line_split[1] = new_node_cat
+                            changed_this_line = True
+                            line = "\t".join(line_split) + "\n"
                         if using_sssom:
                             if line_split[0] in recats:
                                 line_split[1] = recats[line_split[0]]
@@ -105,9 +115,6 @@ def clean_and_normalize_graph(filepath,
                                 line_split[0] = remaps[line_split[0]]
                                 changed_this_line = True
                             line = "\t".join(line_split) + "\n"
-                    if line_split[1] == "biolink:OntologyClass":
-                        line_split[1] = "biolink:NamedThing"
-                        line = "\t".join(line_split) + "\n"
                     if changed_this_line:
                         mapcount = mapcount + 1
                     outnodefile.write(line)
@@ -153,7 +160,7 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
     Report all identifiers of expected and unexpected format,
     and find more appropriate prefixes if possible.
     Does not rewrite IRIs.
-    :param input_nodes: Path to input nodefile
+    :param input_nodes: str, path to input nodefile
     :param output_dir: string of directory, location of unexpected id
     and update map file to be created
     :return: dict, map of original node IDs to new node IDs
@@ -242,6 +249,84 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
         print(f"No identifiers in {input_nodes} will be normalized.")
 
     return update_ids
+
+
+def make_cat_maps(input_nodes: str,
+                  input_edges: str,
+                  output_dir: str) -> Tuple(dict, list):
+    """
+    Retrieve all categories for nodes in a single graph.
+
+    Report all node to category relationships requiring update.
+    Also report all edges to remove because they define categories.
+    Does not rewrite categories.
+    :param input_nodes: str, path to input nodefile
+    :param input_edges: str, path to input edgefile
+    :param output_dir: string of directory, location of unexpected id
+    and update map file to be created
+    :return: tuple containing 1. dict of original node IDs to
+    new node categories, and 2. list of original subject, predicate,
+    object relations to remove from edgelist
+    """
+    id_and_cat_map: Dict[str, str] = {}
+    mal_cat_list = []
+    update_cats: Dict[str, str] = {}
+    remove_edges = []
+
+    print(f"Retrieving categories in {input_nodes}...")
+
+    mal_cat_file_name = os.path.join(output_dir,
+                                     "unexpected_categories.tsv")
+    update_cat_mapfile_name = os.path.join(output_dir,
+                                           "update_category_maps.tsv")
+
+    with open(input_nodes, "r") as nodefile:
+        nodefile.readline()
+        for line in nodefile:
+            splitline = line.rstrip().split("\t")
+            node_id = splitline[0]
+            category = splitline[1]
+            if node_id not in id_and_cat_map:
+                id_and_cat_map[node_id] = category
+            else:
+                if id_and_cat_map[node_id] == category:
+                    continue
+                else:
+                    mal_cat_list.append(node_id)
+
+    # For each id, check its category in the nodelist first
+    # If it's missing or OntologyClass, change to NamedThing
+    # then see if it has any relations impacting its category
+    # then look it up in OAK
+    # If what OAK says doesn't match the nodelist, use OAK's output
+    # If OAK doesn't provide a category then use whatever we have
+
+    for identifier in id_and_cat_map:
+        if id_and_cat_map[identifier] in ["", "biolink:OntologyClass"]:
+            update_cats[identifier] = "biolink:NamedThing"
+
+    mal_id_list_len = len(mal_cat_list)
+    if mal_id_list_len > 0:
+        print(f"Found {mal_id_list_len} unexpected identifiers.")
+        with open(mal_cat_file_name, "w") as idfile:
+            idfile.write("ID\n")
+            for identifier in mal_cat_list:
+                idfile.write(f"{identifier}\n")
+    else:
+        print(f"All categories in {input_nodes} are as expected.")
+
+    update_id_len = len(update_cats)
+    if update_id_len > 0:
+        print(f"Will normalize {update_id_len} identifiers.")
+        with open(update_cat_mapfile_name, "w") as mapfile:
+            mapfile.write("Old ID\tNew Category\n")
+            for identifier in update_cats:
+                mapfile.write(f"{identifier}\t{update_cats[identifier]}\n")
+            print(f"Wrote category maps to {update_cat_mapfile_name}.")
+    else:
+        print(f"No identifiers in {input_nodes} will be normalized.")
+
+    return (update_cats, remove_edges)
 
 
 def load_sssom_maps(maps) -> tuple:
