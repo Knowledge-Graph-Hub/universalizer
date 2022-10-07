@@ -10,7 +10,10 @@ from sssom.parsers import parse_sssom_table  # type: ignore
 from sssom.util import MappingSetDataFrame  # type: ignore
 
 
-def clean_and_normalize_graph(filepath, compressed, maps) -> bool:
+def clean_and_normalize_graph(filepath,
+                              compressed,
+                              maps,
+                              update_categories) -> bool:
     """
     Replace or remove node IDs or nodes as needed.
 

@@ -26,7 +26,15 @@ def cli():
               "-m",
               required=False,
               default="null")
-def run(input_path: str, compressed: bool, map_path: str) -> None:
+@click.option("--update_categories",
+              "-u",
+              required=False,
+              default=False,
+              is_flag=True)
+def run(input_path: str,
+        compressed: bool,
+        map_path: str,
+        update_categories: bool) -> None:
     """Process a graph, normalizing all nodes.
 
     :param input_path: Path to a directory containing
@@ -35,6 +43,8 @@ def run(input_path: str, compressed: bool, map_path: str) -> None:
     :param compressed: bool, True if input_path is a single .tar.gz
     :param map_path: str, path to a single SSSOM ID map or
     a directory of SSSOM maps. Not recursive.
+    :param update_categories: bool, if True, update and verify
+    Biolink categories for all nodes
     :return: None
     """
     print(f"Input path: {input_path}")
@@ -46,7 +56,13 @@ def run(input_path: str, compressed: bool, map_path: str) -> None:
     else:
         maps = [map_path]
 
-    if clean_and_normalize_graph(input_path, compressed, maps):
+    if update_categories:
+        print("Will update categories.")
+
+    if clean_and_normalize_graph(input_path,
+                                 compressed,
+                                 maps,
+                                 update_categories):
         print("Complete.")
 
     return None
