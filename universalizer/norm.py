@@ -350,7 +350,7 @@ def make_cat_maps(input_nodes: str,
             update_cats[identifier] = "biolink:NamedThing"
 
     if use_oak:
-        oak_cat_maps = get_cats_from_oak(id_and_cat_map.keys())
+        oak_cat_maps = get_cats_from_oak(list(id_and_cat_map.keys()))
         for identifier in oak_cat_maps:
             if oak_cat_maps[identifier] != "" \
                 and id_and_cat_map[identifier] in \
