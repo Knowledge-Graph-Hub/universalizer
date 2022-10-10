@@ -2,7 +2,7 @@
 
 import os
 import tarfile
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 from curies import Converter  # type: ignore
 from prefixmaps.io.parser import load_multi_context  # type: ignore
@@ -253,7 +253,7 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
 
 def make_cat_maps(input_nodes: str,
                   input_edges: str,
-                  output_dir: str) -> Tuple(dict, list):
+                  output_dir: str) -> Tuple[dict, list]:
     """
     Retrieve all categories for nodes in a single graph.
 
@@ -271,7 +271,7 @@ def make_cat_maps(input_nodes: str,
     id_and_cat_map: Dict[str, str] = {}
     mal_cat_list = []
     update_cats: Dict[str, str] = {}
-    remove_edges = []
+    remove_edges: List[str] = []
 
     print(f"Retrieving categories in {input_nodes}...")
 
