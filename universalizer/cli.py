@@ -49,7 +49,9 @@ def run(input_path: str,
     """
     print(f"Input path: {input_path}")
 
-    if isdir(map_path):
+    if map_path == "":
+        maps = []
+    elif isdir(map_path):
         print(f"Will use ID maps in {map_path}.")
         maps = [join(map_path, fn) for fn in listdir(map_path) if
                 isfile(join(map_path, fn))]

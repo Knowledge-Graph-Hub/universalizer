@@ -54,7 +54,7 @@ def clean_and_normalize_graph(filepath,
     # Merge them together.
     using_sssom = False
 
-    if maps != [""]:
+    if maps != []:
         using_sssom = True
         print(f"Found these map files:{maps}")
         remaps, recats = load_sssom_maps(maps)
