@@ -9,6 +9,8 @@ from prefixmaps.io.parser import load_multi_context  # type: ignore
 from sssom.parsers import parse_sssom_table  # type: ignore
 from sssom.util import MappingSetDataFrame  # type: ignore
 
+from universalizer.oak_utils import get_cats_from_oak
+
 
 def clean_and_normalize_graph(filepath,
                               compressed,
@@ -334,6 +336,15 @@ def make_cat_maps(input_nodes: str,
     for identifier in id_and_cat_map:
         if id_and_cat_map[identifier] in ["", "biolink:OntologyClass"]:
             update_cats[identifier] = "biolink:NamedThing"
+
+    oak_cat_maps = get_cats_from_oak(id_and_cat_map.keys())
+    for identifier in oak_cat_maps:
+        if oak_cat_maps[identifier] != "" \
+            and id_and_cat_map[identifier] in \
+                ["", "biolink:OntologyClass", "biolink:NamedThing"]:
+            update_cats[identifier] = oak_cat_maps[identifier]
+        elif oak_cat_maps[identifier] != "":
+            mal_cat_list.append(identifier)
 
     mal_id_list_len = len(mal_cat_list)
     if mal_id_list_len > 0:
