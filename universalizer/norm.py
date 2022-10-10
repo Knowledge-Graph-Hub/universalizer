@@ -101,12 +101,13 @@ def clean_and_normalize_graph(filepath,
                             line_split[0] = new_node_id
                             changed_this_line = True
                             line = "\t".join(line_split) + "\n"
-                        if line_split[0] in remap_these_categories:
-                            new_node_cat = \
-                                remap_these_categories[line_split[0]]
-                            line_split[1] = new_node_cat
-                            changed_this_line = True
-                            line = "\t".join(line_split) + "\n"
+                        if update_categories:
+                            if line_split[0] in remap_these_categories:
+                                new_node_cat = \
+                                    remap_these_categories[line_split[0]]
+                                line_split[1] = new_node_cat
+                                changed_this_line = True
+                                line = "\t".join(line_split) + "\n"
                         if using_sssom:
                             if line_split[0] in recats:
                                 line_split[1] = recats[line_split[0]]
