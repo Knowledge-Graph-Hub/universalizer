@@ -57,7 +57,6 @@ def clean_and_normalize_graph(filepath,
         using_sssom = True
         print(f"Found these map files:{maps}")
         remaps, recats = load_sssom_maps(maps)
-        print(recats)
 
     # Remap node IDs
     # First, identify node and edge lists
@@ -141,7 +140,7 @@ def clean_and_normalize_graph(filepath,
         os.replace(outedgepath, edgepath)
 
         if mapcount > 0:
-            print(f"Remapped {mapcount} node IDs.")
+            print(f"Updated {mapcount} nodes.")
         elif mapcount == 0:
             print("Could not remap any node IDs.")
 
@@ -235,8 +234,6 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
             idfile.write("ID\n")
             for identifier in mal_id_list:
                 idfile.write(f"{identifier}\n")
-    else:
-        print(f"All identifiers in {input_nodes} are as expected.")
 
     update_id_len = len(update_ids)
     if update_id_len > 0:
@@ -246,8 +243,6 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
             for identifier in update_ids:
                 mapfile.write(f"{identifier}\t{update_ids[identifier]}\n")
             print(f"Wrote IRI maps to {update_mapfile_name}.")
-    else:
-        print(f"No identifiers in {input_nodes} will be normalized.")
 
     return update_ids
 
