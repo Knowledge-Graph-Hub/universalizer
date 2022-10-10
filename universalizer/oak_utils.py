@@ -22,7 +22,6 @@ def get_cats_from_oak(terms: List[str]) -> Dict[str, str]:
     :return: dict of CURIEs with corresponding categories.
     Those without categories are assigned empty strings.
     """
-
     db_subsets: Dict[str, list] = {}
     cat_maps: Dict[str, str] = {}
 

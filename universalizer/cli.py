@@ -1,10 +1,10 @@
 """CLI for universalizer."""
 
+import sys
 from os import listdir
 from os.path import isdir, isfile, join
 
 import click
-import sys
 
 from universalizer.norm import clean_and_normalize_graph
 
