@@ -75,7 +75,7 @@ def clean_and_normalize_graph(filepath,
     remap_these_nodes = make_id_maps(nodepath,
                                      os.path.dirname(nodepath))
 
-    remove_these_edges = []
+    remove_these_edges: List[list] = []
 
     if update_categories:
         remap_these_categories, \
