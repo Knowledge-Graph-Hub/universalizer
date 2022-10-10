@@ -25,7 +25,7 @@ def cli():
 @click.option("--map_path",
               "-m",
               required=False,
-              default="null")
+              default="")
 @click.option("--update_categories",
               "-u",
               required=False,

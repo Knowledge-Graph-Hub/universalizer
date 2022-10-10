@@ -43,7 +43,8 @@ def clean_and_normalize_graph(filepath,
                 graph_file_paths.append(os.path.join(filepath, filename))
 
     if len(graph_file_paths) > 2:
-        raise RuntimeError("Found more than two graph files.")
+        raise RuntimeError("Found more than two graph files: "
+                           f"{graph_file_paths}")
     elif len(graph_file_paths) == 0:
         raise RuntimeError("Found no graph files!")
     elif len(graph_file_paths) == 2:
@@ -53,7 +54,7 @@ def clean_and_normalize_graph(filepath,
     # Merge them together.
     using_sssom = False
 
-    if len(maps) > 0:
+    if maps != [""]:
         using_sssom = True
         print(f"Found these map files:{maps}")
         remaps, recats = load_sssom_maps(maps)
@@ -73,6 +74,9 @@ def clean_and_normalize_graph(filepath,
 
     remap_these_nodes = make_id_maps(nodepath,
                                      os.path.dirname(nodepath))
+
+    remove_these_edges = []
+
     if update_categories:
         remap_these_categories, \
             remove_these_edges = make_cat_maps(nodepath,
@@ -119,7 +123,12 @@ def clean_and_normalize_graph(filepath,
                         mapcount = mapcount + 1
                     outnodefile.write(line)
                 for line in inedgefile:
+                    rem_edge_count = 0
                     line_split = (line.rstrip()).split("\t")
+                    if [line_split[1], line_split[2], line_split[3]] \
+                            in remove_these_edges:
+                        rem_edge_count = rem_edge_count + 1
+                        continue
                     if mapping:
                         # Check for edges containing nodes to be remapped
                         for col in [1, 3]:
@@ -143,6 +152,9 @@ def clean_and_normalize_graph(filepath,
             print(f"Updated {mapcount} nodes.")
         elif mapcount == 0:
             print("Could not remap any node IDs.")
+
+        if rem_edge_count > 0:
+            print(f"Removed {rem_edge_count} redundant edges.")
 
         success = True
 
@@ -261,13 +273,13 @@ def make_cat_maps(input_nodes: str,
     :param output_dir: string of directory, location of unexpected id
     and update map file to be created
     :return: tuple containing 1. dict of original node IDs to
-    new node categories, and 2. list of original subject, predicate,
-    object relations to remove from edgelist
+    new node categories, and 2. list of lists of original subject,
+    predicate, object relations to remove from edgelist
     """
     id_and_cat_map: Dict[str, str] = {}
     mal_cat_list = []
     update_cats: Dict[str, str] = {}
-    remove_edges: List[str] = []
+    remove_edges: List[list] = []
 
     print(f"Retrieving categories in {input_nodes}...")
 
@@ -276,6 +288,7 @@ def make_cat_maps(input_nodes: str,
     update_cat_mapfile_name = os.path.join(output_dir,
                                            "update_category_maps.tsv")
 
+    # Examine nodes, obtain categories
     with open(input_nodes, "r") as nodefile:
         nodefile.readline()
         for line in nodefile:
@@ -290,9 +303,30 @@ def make_cat_maps(input_nodes: str,
                 else:
                     mal_cat_list.append(node_id)
 
+    # Examine edges, obtain biolink:category relations
+    # These take precedence over nodelist category assignments
+    with open(input_edges, "r") as edgefile:
+        edgefile.readline()
+        for line in edgefile:
+            splitline = line.rstrip().split("\t")
+            subj_node_id = splitline[1]
+            pred = splitline[2]
+            obj_node_id = splitline[3]
+            if pred.lower() == "biolink:category":
+                remove_edges.append([subj_node_id, pred, obj_node_id])
+                if subj_node_id not in id_and_cat_map:
+                    update_cats[subj_node_id] = obj_node_id
+                elif id_and_cat_map[subj_node_id] in ["biolink:OntologyClass",
+                                                      "biolink:NamedThing"]:
+                    update_cats[subj_node_id] = obj_node_id
+                else:
+                    if id_and_cat_map[subj_node_id] == category:
+                        continue
+                    else:
+                        mal_cat_list.append(subj_node_id)
+
     # For each id, check its category in the nodelist first
     # If it's missing or OntologyClass, change to NamedThing
-    # then see if it has any relations impacting its category
     # then look it up in OAK
     # If what OAK says doesn't match the nodelist, use OAK's output
     # If OAK doesn't provide a category then use whatever we have
@@ -303,7 +337,7 @@ def make_cat_maps(input_nodes: str,
 
     mal_id_list_len = len(mal_cat_list)
     if mal_id_list_len > 0:
-        print(f"Found {mal_id_list_len} unexpected identifiers.")
+        print(f"Found {mal_id_list_len} unexpected categories.")
         with open(mal_cat_file_name, "w") as idfile:
             idfile.write("ID\n")
             for identifier in mal_cat_list:
@@ -313,7 +347,7 @@ def make_cat_maps(input_nodes: str,
 
     update_id_len = len(update_cats)
     if update_id_len > 0:
-        print(f"Will normalize {update_id_len} identifiers.")
+        print(f"Will normalize {update_id_len} categories.")
         with open(update_cat_mapfile_name, "w") as mapfile:
             mapfile.write("Old ID\tNew Category\n")
             for identifier in update_cats:
