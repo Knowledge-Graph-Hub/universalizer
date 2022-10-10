@@ -4,6 +4,7 @@ from os import listdir
 from os.path import isdir, isfile, join
 
 import click
+import sys
 
 from universalizer.norm import clean_and_normalize_graph
 
@@ -31,10 +32,16 @@ def cli():
               required=False,
               default=False,
               is_flag=True)
+@click.option("--oak_lookup",
+              "-l",
+              required=False,
+              default=False,
+              is_flag=True)
 def run(input_path: str,
         compressed: bool,
         map_path: str,
-        update_categories: bool) -> None:
+        update_categories: bool,
+        oak_lookup: bool) -> None:
     """Process a graph, normalizing all nodes.
 
     :param input_path: Path to a directory containing
@@ -45,6 +52,8 @@ def run(input_path: str,
     a directory of SSSOM maps. Not recursive.
     :param update_categories: bool, if True, update and verify
     Biolink categories for all nodes
+    :param oak_lookup: bool, if True, look up additional
+    Biolink categories from OAK
     :return: None
     """
     print(f"Input path: {input_path}")
@@ -61,10 +70,15 @@ def run(input_path: str,
     if update_categories:
         print("Will update categories.")
 
+    if oak_lookup and not update_categories:
+        sys.exit("Cannot look up categories if not updating them. "
+                 "Please check the specified options.")
+
     if clean_and_normalize_graph(input_path,
                                  compressed,
                                  maps,
-                                 update_categories):
+                                 update_categories,
+                                 oak_lookup):
         print("Complete.")
 
     return None

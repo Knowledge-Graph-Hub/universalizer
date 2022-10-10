@@ -24,7 +24,8 @@ class TestNorm(TestCase):
             clean_and_normalize_graph(self.test_graph_path,
                                       compressed=False,
                                       maps=[],
-                                      update_categories=False)
+                                      update_categories=False,
+                                      oak_lookup=False)
         )
 
     def test_sssom_node_remap(self):
@@ -33,7 +34,8 @@ class TestNorm(TestCase):
             clean_and_normalize_graph(self.id_graph_path,
                                       compressed=False,
                                       maps=self.map_paths,
-                                      update_categories=False)
+                                      update_categories=False,
+                                      oak_lookup=False)
         )
 
     def test_sssom_cat_remap(self):
@@ -42,5 +44,6 @@ class TestNorm(TestCase):
             clean_and_normalize_graph(self.cat_graph_path,
                                       compressed=False,
                                       maps=self.map_paths,
-                                      update_categories=False)
+                                      update_categories=False,
+                                      oak_lookup=False)
         )

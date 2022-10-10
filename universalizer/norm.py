@@ -15,17 +15,26 @@ from universalizer.oak_utils import get_cats_from_oak
 def clean_and_normalize_graph(filepath,
                               compressed,
                               maps,
-                              update_categories) -> bool:
+                              update_categories,
+                              oak_lookup) -> bool:
     """
     Replace or remove node IDs or nodes as needed.
 
     :param filepath: str, name or path of KGX graph files
     :param compressed: bool, True if filepath is tar.gz compressed
     :param maps: list of str filepaths to SSSOM maps
+    :param update_categories: bool, if True, update and verify
+    Biolink categories for all nodes
+    :param oak_lookup: bool, if True, look up additional
+    Biolink categories from OAK
     :return: bool, True if successful
     """
     success = True
     mapping = True
+    use_oak = False
+
+    if oak_lookup:
+        use_oak = True
 
     graph_file_paths = []
 
@@ -83,7 +92,8 @@ def clean_and_normalize_graph(filepath,
         remap_these_categories, \
             remove_these_edges = make_cat_maps(nodepath,
                                                edgepath,
-                                               os.path.dirname(nodepath))
+                                               os.path.dirname(nodepath),
+                                               use_oak)
 
     # Continue with mapping if everything's OK so far
     # Sometimes prefixes get capitalized, so we check for that too
@@ -263,7 +273,8 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
 
 def make_cat_maps(input_nodes: str,
                   input_edges: str,
-                  output_dir: str) -> Tuple[dict, list]:
+                  output_dir: str,
+                  use_oak: bool) -> Tuple[dict, list]:
     """
     Retrieve all categories for nodes in a single graph.
 
@@ -274,6 +285,7 @@ def make_cat_maps(input_nodes: str,
     :param input_edges: str, path to input edgefile
     :param output_dir: string of directory, location of unexpected id
     and update map file to be created
+    :param use_oak: bool, if True, look up categories from OAK
     :return: tuple containing 1. dict of original node IDs to
     new node categories, and 2. list of lists of original subject,
     predicate, object relations to remove from edgelist
@@ -329,7 +341,7 @@ def make_cat_maps(input_nodes: str,
 
     # For each id, check its category in the nodelist first
     # If it's missing or OntologyClass, change to NamedThing
-    # then look it up in OAK
+    # then look it up in OAK if requested
     # If what OAK says doesn't match the nodelist, use OAK's output
     # If OAK doesn't provide a category then use whatever we have
 
@@ -337,14 +349,15 @@ def make_cat_maps(input_nodes: str,
         if id_and_cat_map[identifier] in ["", "biolink:OntologyClass"]:
             update_cats[identifier] = "biolink:NamedThing"
 
-    oak_cat_maps = get_cats_from_oak(id_and_cat_map.keys())
-    for identifier in oak_cat_maps:
-        if oak_cat_maps[identifier] != "" \
-            and id_and_cat_map[identifier] in \
-                ["", "biolink:OntologyClass", "biolink:NamedThing"]:
-            update_cats[identifier] = oak_cat_maps[identifier]
-        elif oak_cat_maps[identifier] != "":
-            mal_cat_list.append(identifier)
+    if use_oak:
+        oak_cat_maps = get_cats_from_oak(id_and_cat_map.keys())
+        for identifier in oak_cat_maps:
+            if oak_cat_maps[identifier] != "" \
+                and id_and_cat_map[identifier] in \
+                    ["", "biolink:OntologyClass", "biolink:NamedThing"]:
+                update_cats[identifier] = oak_cat_maps[identifier]
+            elif oak_cat_maps[identifier] != "":
+                mal_cat_list.append(identifier)
 
     mal_id_list_len = len(mal_cat_list)
     if mal_id_list_len > 0:
