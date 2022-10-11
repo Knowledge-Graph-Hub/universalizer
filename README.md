@@ -48,6 +48,12 @@ or a whole directory of them:
 univeralizer run -m path/to/mapfiles path/to/directory
 ```
 
+To map node categories as well as identifiers, use the `-u` flag:
+
+```
+univeralizer run -m path/to/mapfiles path/to/directory -u
+```
+
 For SSSOM maps from `subject_id` to `object_id`, subject node IDs will be remapped to object IDs.
 
 If the `object_category` value is specified the node's category ID will be remapped as well.
