@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "universalizer"
-version = "0.0.1"
+version = "0.0.2"
 description = "Provides functions for knowledge graph cleanup and identifier normalization."
 authors = ["caufieldjh <j.harry.caufield@gmail.com>"]
 license = "BSD-3"
