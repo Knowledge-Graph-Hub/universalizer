@@ -290,7 +290,7 @@ def make_cat_maps(input_nodes: str,
     id_and_cat_map: Dict[str, str] = {}
     mal_cat_list = []
     update_cats: Dict[str, str] = {}
-    remove_edges: List[list] = []
+    remove_edges: List[str] = []
 
     print(f"Retrieving categories in {input_nodes}...")
 
@@ -330,7 +330,6 @@ def make_cat_maps(input_nodes: str,
             pred = splitline[2]
             obj_node_id = splitline[3]
             if pred.lower() == "biolink:category":
-                remove_edges.append([subj_node_id, pred, obj_node_id])
                 if obj_node_id not in \
                         ["biolink:NamedThing", "biolink:OntologyClass"]:
                     remove_edges.append(edge_id)
