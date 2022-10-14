@@ -317,6 +317,11 @@ def make_cat_maps(input_nodes: str,
                 else:
                     mal_cat_list.append(node_id)
 
+    # if cat is OntologyClass or missing, set to NamedThing
+    for identifier in id_and_cat_map:
+        if id_and_cat_map[identifier] in ["", "biolink:OntologyClass"]:
+            update_cats[identifier] = "biolink:NamedThing"
+
     # Examine edges, obtain biolink:category relations
     # These take precedence over nodelist category assignments
     with open(input_edges, "r") as edgefile:
@@ -328,27 +333,15 @@ def make_cat_maps(input_nodes: str,
             obj_node_id = splitline[3]
             if pred.lower() == "biolink:category":
                 remove_edges.append([subj_node_id, pred, obj_node_id])
-                if subj_node_id not in id_and_cat_map:
+                if obj_node_id not in \
+                        ["biolink:NamedThing", "biolink:OntologyClass"]:
+                    remove_edges.append([subj_node_id, pred, obj_node_id])
                     update_cats[subj_node_id] = obj_node_id
-                elif id_and_cat_map[subj_node_id] in ["biolink:OntologyClass",
-                                                      "biolink:NamedThing"]:
-                    update_cats[subj_node_id] = obj_node_id
-                else:
-                    if id_and_cat_map[subj_node_id] == category:
-                        continue
-                    else:
-                        mal_cat_list.append(subj_node_id)
 
     # For each id, check its category in the nodelist first
-    # If it's missing or OntologyClass, change to NamedThing
     # then look it up in OAK if requested
     # If what OAK says doesn't match the nodelist, use OAK's output
     # If OAK doesn't provide a category then use whatever we have
-
-    for identifier in id_and_cat_map:
-        if id_and_cat_map[identifier] in ["", "biolink:OntologyClass"]:
-            update_cats[identifier] = "biolink:NamedThing"
-
     if use_oak:
         oak_cat_maps = get_cats_from_oak(list(id_and_cat_map.keys()))
         for identifier in oak_cat_maps:
