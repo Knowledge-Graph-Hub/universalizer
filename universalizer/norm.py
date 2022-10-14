@@ -86,7 +86,7 @@ def clean_and_normalize_graph(filepath,
     remap_these_nodes = make_id_maps(nodepath,
                                      os.path.dirname(nodepath))
 
-    remove_these_edges: List[list] = []
+    remove_these_edges: List[str] = []
 
     if update_categories:
         remap_these_categories, \
@@ -95,6 +95,7 @@ def clean_and_normalize_graph(filepath,
                                                os.path.dirname(nodepath),
                                                use_oak)
 
+    print("Updating graph files...")
     # Continue with mapping if everything's OK so far
     # Sometimes prefixes get capitalized, so we check for that too
     try:
@@ -115,14 +116,12 @@ def clean_and_normalize_graph(filepath,
                             new_node_id = remap_these_nodes[line_split[0]]
                             line_split[0] = new_node_id
                             changed_this_line = True
-                            line = "\t".join(line_split) + "\n"
                         if update_categories:
                             if line_split[0] in remap_these_categories:
                                 new_node_cat = \
                                     remap_these_categories[line_split[0]]
                                 line_split[1] = new_node_cat
                                 changed_this_line = True
-                                line = "\t".join(line_split) + "\n"
                         if using_sssom:
                             if line_split[0] in recats:
                                 line_split[1] = recats[line_split[0]]
@@ -130,15 +129,14 @@ def clean_and_normalize_graph(filepath,
                             if line_split[0] in remaps:
                                 line_split[0] = remaps[line_split[0]]
                                 changed_this_line = True
-                            line = "\t".join(line_split) + "\n"
                     if changed_this_line:
                         mapcount = mapcount + 1
+                    line = "\t".join(line_split) + "\n"
                     outnodefile.write(line)
                 for line in inedgefile:
                     rem_edge_count = 0
                     line_split = (line.rstrip()).split("\t")
-                    if [line_split[1], line_split[2], line_split[3]] \
-                            in remove_these_edges:
+                    if line_split[0] in remove_these_edges:
                         rem_edge_count = rem_edge_count + 1
                         continue
                     if mapping:
@@ -148,13 +146,12 @@ def clean_and_normalize_graph(filepath,
                                 new_node_id = \
                                     remap_these_nodes[line_split[col]]
                                 line_split[col] = new_node_id
-                                line = "\t".join(line_split) + "\n"
                             if using_sssom:
                                 if line_split[col] in remaps:
                                     new_node_id = \
                                         remaps[line_split[col]]
                                     line_split[col] = new_node_id
-                                    line = "\t".join(line_split) + "\n"
+                    line = "\t".join(line_split) + "\n"
                     outedgefile.write(line)
 
         os.replace(outnodepath, nodepath)
@@ -293,7 +290,7 @@ def make_cat_maps(input_nodes: str,
     id_and_cat_map: Dict[str, str] = {}
     mal_cat_list = []
     update_cats: Dict[str, str] = {}
-    remove_edges: List[list] = []
+    remove_edges: List[str] = []
 
     print(f"Retrieving categories in {input_nodes}...")
 
@@ -328,14 +325,14 @@ def make_cat_maps(input_nodes: str,
         edgefile.readline()
         for line in edgefile:
             splitline = line.rstrip().split("\t")
+            edge_id = splitline[0]
             subj_node_id = splitline[1]
             pred = splitline[2]
             obj_node_id = splitline[3]
             if pred.lower() == "biolink:category":
-                remove_edges.append([subj_node_id, pred, obj_node_id])
                 if obj_node_id not in \
                         ["biolink:NamedThing", "biolink:OntologyClass"]:
-                    remove_edges.append([subj_node_id, pred, obj_node_id])
+                    remove_edges.append(edge_id)
                     update_cats[subj_node_id] = obj_node_id
 
     # For each id, check its category in the nodelist first
