@@ -9,8 +9,8 @@ from prefixmaps.io.parser import load_multi_context  # type: ignore
 from sssom.parsers import parse_sssom_table  # type: ignore
 from sssom.util import MappingSetDataFrame  # type: ignore
 
-from universalizer.oak_utils import get_cats_from_oak
 from universalizer.categories import STY_TO_BIOLINK
+from universalizer.oak_utils import get_cats_from_oak
 
 
 def clean_and_normalize_graph(filepath,
