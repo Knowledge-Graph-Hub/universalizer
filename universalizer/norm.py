@@ -320,6 +320,7 @@ def make_cat_maps(input_nodes: str,
             update_cats[identifier] = "biolink:NamedThing"
 
     # Examine edges, obtain biolink:category relations
+    # and those from UMLS semantic types (STY)
     # These take precedence over nodelist category assignments
     with open(input_edges, "r") as edgefile:
         edgefile.readline()
@@ -332,6 +333,11 @@ def make_cat_maps(input_nodes: str,
             if pred.lower() == "biolink:category":
                 if obj_node_id not in \
                         ["biolink:NamedThing", "biolink:OntologyClass"]:
+                    remove_edges.append(edge_id)
+                    update_cats[subj_node_id] = obj_node_id
+            if pred.lower() == "biolink:related_to":
+                if obj_node_id.startswith("STY") or \
+                        (obj_node_id.split("/"))[-2] == "STY":
                     remove_edges.append(edge_id)
                     update_cats[subj_node_id] = obj_node_id
 
