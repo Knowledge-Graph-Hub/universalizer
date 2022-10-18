@@ -9,6 +9,7 @@ from prefixmaps.io.parser import load_multi_context  # type: ignore
 from sssom.parsers import parse_sssom_table  # type: ignore
 from sssom.util import MappingSetDataFrame  # type: ignore
 
+from universalizer.categories import STY_TO_BIOLINK
 from universalizer.oak_utils import get_cats_from_oak
 
 
@@ -320,6 +321,7 @@ def make_cat_maps(input_nodes: str,
             update_cats[identifier] = "biolink:NamedThing"
 
     # Examine edges, obtain biolink:category relations
+    # and those from UMLS semantic types (STY)
     # These take precedence over nodelist category assignments
     with open(input_edges, "r") as edgefile:
         edgefile.readline()
@@ -334,6 +336,11 @@ def make_cat_maps(input_nodes: str,
                         ["biolink:NamedThing", "biolink:OntologyClass"]:
                     remove_edges.append(edge_id)
                     update_cats[subj_node_id] = obj_node_id
+            if pred.lower() == "biolink:related_to":
+                if obj_node_id.startswith("STY") or \
+                        (obj_node_id.split("/"))[-2] == "STY":
+                    remove_edges.append(edge_id)
+                    update_cats[subj_node_id] = STY_TO_BIOLINK[obj_node_id]
 
     # For each id, check its category in the nodelist first
     # then look it up in OAK if requested
