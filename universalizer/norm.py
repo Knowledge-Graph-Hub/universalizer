@@ -10,6 +10,7 @@ from sssom.parsers import parse_sssom_table  # type: ignore
 from sssom.util import MappingSetDataFrame  # type: ignore
 
 from universalizer.oak_utils import get_cats_from_oak
+from universalizer.categories import STY_TO_BIOLINK
 
 
 def clean_and_normalize_graph(filepath,
@@ -339,7 +340,7 @@ def make_cat_maps(input_nodes: str,
                 if obj_node_id.startswith("STY") or \
                         (obj_node_id.split("/"))[-2] == "STY":
                     remove_edges.append(edge_id)
-                    update_cats[subj_node_id] = obj_node_id
+                    update_cats[subj_node_id] = STY_TO_BIOLINK[obj_node_id]
 
     # For each id, check its category in the nodelist first
     # then look it up in OAK if requested
