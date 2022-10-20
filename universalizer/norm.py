@@ -82,7 +82,7 @@ def clean_and_normalize_graph(
 
     # Now create the set of mappings to perform
 
-    remap_these_nodes = make_id_maps(nodepath, os.path.dirname(nodepath, contexts))
+    remap_these_nodes = make_id_maps(nodepath, os.path.dirname(nodepath), contexts)
 
     remove_these_edges: List[str] = []
 
