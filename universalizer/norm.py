@@ -14,7 +14,7 @@ from universalizer.oak_utils import get_cats_from_oak
 
 
 def clean_and_normalize_graph(
-    filepath, compressed, maps, update_categories, oak_lookup
+    filepath, compressed, maps, update_categories, contexts, oak_lookup
 ) -> bool:
     """
     Replace or remove node IDs or nodes as needed.
@@ -24,6 +24,7 @@ def clean_and_normalize_graph(
     :param maps: list of str filepaths to SSSOM maps
     :param update_categories: bool, if True, update and verify
     Biolink categories for all nodes
+    :param contexts: list, contexts to use for prefixes
     :param oak_lookup: bool, if True, look up additional
     Biolink categories from OAK
     :return: bool, True if successful
@@ -81,7 +82,7 @@ def clean_and_normalize_graph(
 
     # Now create the set of mappings to perform
 
-    remap_these_nodes = make_id_maps(nodepath, os.path.dirname(nodepath))
+    remap_these_nodes = make_id_maps(nodepath, os.path.dirname(nodepath, contexts))
 
     remove_these_edges: List[str] = []
 
@@ -165,7 +166,7 @@ def clean_and_normalize_graph(
     return success
 
 
-def make_id_maps(input_nodes: str, output_dir: str) -> dict:
+def make_id_maps(input_nodes: str, output_dir: str, contexts: list) -> dict:
     """
     Retrieve all entity identifiers for a single graph.
 
@@ -175,6 +176,7 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
     :param input_nodes: str, path to input nodefile
     :param output_dir: string of directory, location of unexpected id
     and update map file to be created
+    :param contexts: list, contexts to use for prefixes
     :return: dict, map of original node IDs to new node IDs
     """
     id_list = []
@@ -185,7 +187,7 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
     # TODO: expand reverse contexts beyond bijective maps
     # TODO: add more capitalization variants
 
-    curie_contexts = load_multi_context(["obo", "bioregistry.upper"])
+    curie_contexts = load_multi_context(contexts)
     all_contexts = curie_contexts.as_dict()
     all_contexts = {key: val for key, val in all_contexts.items()}
     curie_converter = Converter.from_prefix_map(all_contexts)
