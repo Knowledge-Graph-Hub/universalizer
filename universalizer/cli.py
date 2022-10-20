@@ -32,6 +32,7 @@ def run(
     compressed: bool,
     map_path: str,
     update_categories: bool,
+    contexts: list,
     oak_lookup: bool,
 ) -> None:
     """Process a graph, normalizing all nodes.
@@ -71,7 +72,7 @@ def run(
         )
 
     if clean_and_normalize_graph(
-        input_path, compressed, maps, update_categories, oak_lookup
+        input_path, compressed, maps, update_categories, contexts, oak_lookup
     ):
         print("Complete.")
 
