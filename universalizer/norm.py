@@ -13,11 +13,9 @@ from universalizer.categories import STY_TO_BIOLINK
 from universalizer.oak_utils import get_cats_from_oak
 
 
-def clean_and_normalize_graph(filepath,
-                              compressed,
-                              maps,
-                              update_categories,
-                              oak_lookup) -> bool:
+def clean_and_normalize_graph(
+    filepath, compressed, maps, update_categories, oak_lookup
+) -> bool:
     """
     Replace or remove node IDs or nodes as needed.
 
@@ -55,8 +53,7 @@ def clean_and_normalize_graph(filepath,
                 graph_file_paths.append(os.path.join(filepath, filename))
 
     if len(graph_file_paths) > 2:
-        raise RuntimeError("Found more than two graph files: "
-                           f"{graph_file_paths}")
+        raise RuntimeError("Found more than two graph files: " f"{graph_file_paths}")
     elif len(graph_file_paths) == 0:
         raise RuntimeError("Found no graph files!")
     elif len(graph_file_paths) == 2:
@@ -84,25 +81,21 @@ def clean_and_normalize_graph(filepath,
 
     # Now create the set of mappings to perform
 
-    remap_these_nodes = make_id_maps(nodepath,
-                                     os.path.dirname(nodepath))
+    remap_these_nodes = make_id_maps(nodepath, os.path.dirname(nodepath))
 
     remove_these_edges: List[str] = []
 
     if update_categories:
-        remap_these_categories, \
-            remove_these_edges = make_cat_maps(nodepath,
-                                               edgepath,
-                                               os.path.dirname(nodepath),
-                                               use_oak)
+        remap_these_categories, remove_these_edges = make_cat_maps(
+            nodepath, edgepath, os.path.dirname(nodepath), use_oak
+        )
 
     print("Updating graph files...")
     # Continue with mapping if everything's OK so far
     # Sometimes prefixes get capitalized, so we check for that too
     try:
         mapcount = 0
-        with open(nodepath, "r") as innodefile, \
-                open(edgepath, "r") as inedgefile:
+        with open(nodepath, "r") as innodefile, open(edgepath, "r") as inedgefile:
             with open(outnodepath, "w") as outnodefile, open(
                 outedgepath, "w"
             ) as outedgefile:
@@ -119,8 +112,7 @@ def clean_and_normalize_graph(filepath,
                             changed_this_line = True
                         if update_categories:
                             if line_split[0] in remap_these_categories:
-                                new_node_cat = \
-                                    remap_these_categories[line_split[0]]
+                                new_node_cat = remap_these_categories[line_split[0]]
                                 line_split[1] = new_node_cat
                                 changed_this_line = True
                         if using_sssom:
@@ -144,13 +136,11 @@ def clean_and_normalize_graph(filepath,
                         # Check for edges containing nodes to be remapped
                         for col in [1, 3]:
                             if line_split[col] in remap_these_nodes:
-                                new_node_id = \
-                                    remap_these_nodes[line_split[col]]
+                                new_node_id = remap_these_nodes[line_split[col]]
                                 line_split[col] = new_node_id
                             if using_sssom:
                                 if line_split[col] in remaps:
-                                    new_node_id = \
-                                        remaps[line_split[col]]
+                                    new_node_id = remaps[line_split[col]]
                                     line_split[col] = new_node_id
                     line = "\t".join(line_split) + "\n"
                     outedgefile.write(line)
@@ -201,8 +191,7 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
     curie_converter = Converter.from_prefix_map(all_contexts)
 
     all_reverse_contexts = {val: key for key, val in all_contexts.items()}
-    all_reverse_contexts_lc = {val.lower(): key for key, val
-                               in all_contexts.items()}
+    all_reverse_contexts_lc = {val.lower(): key for key, val in all_contexts.items()}
     all_reverse_contexts.update(all_reverse_contexts_lc)
     iri_converter = Converter.from_reverse_prefix_map(all_reverse_contexts)
 
@@ -269,10 +258,9 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
     return update_ids
 
 
-def make_cat_maps(input_nodes: str,
-                  input_edges: str,
-                  output_dir: str,
-                  use_oak: bool) -> Tuple[dict, list]:
+def make_cat_maps(
+    input_nodes: str, input_edges: str, output_dir: str, use_oak: bool
+) -> Tuple[dict, list]:
     """
     Retrieve all categories for nodes in a single graph.
 
@@ -295,10 +283,8 @@ def make_cat_maps(input_nodes: str,
 
     print(f"Retrieving categories in {input_nodes}...")
 
-    mal_cat_file_name = os.path.join(output_dir,
-                                     "unexpected_categories.tsv")
-    update_cat_mapfile_name = os.path.join(output_dir,
-                                           "update_category_maps.tsv")
+    mal_cat_file_name = os.path.join(output_dir, "unexpected_categories.tsv")
+    update_cat_mapfile_name = os.path.join(output_dir, "update_category_maps.tsv")
 
     # Examine nodes, obtain categories
     with open(input_nodes, "r") as nodefile:
@@ -332,13 +318,14 @@ def make_cat_maps(input_nodes: str,
             pred = splitline[2]
             obj_node_id = splitline[3]
             if pred.lower() == "biolink:category":
-                if obj_node_id not in \
-                        ["biolink:NamedThing", "biolink:OntologyClass"]:
+                if obj_node_id not in ["biolink:NamedThing", "biolink:OntologyClass"]:
                     remove_edges.append(edge_id)
                     update_cats[subj_node_id] = obj_node_id
             if pred.lower() == "biolink:related_to":
-                if obj_node_id.startswith("STY") or \
-                        (obj_node_id.split("/"))[-2] == "STY":
+                if (
+                    obj_node_id.startswith("STY")
+                    or (obj_node_id.split("/"))[-2] == "STY"
+                ):
                     remove_edges.append(edge_id)
                     update_cats[subj_node_id] = STY_TO_BIOLINK[obj_node_id]
 
@@ -349,9 +336,11 @@ def make_cat_maps(input_nodes: str,
     if use_oak:
         oak_cat_maps = get_cats_from_oak(list(id_and_cat_map.keys()))
         for identifier in oak_cat_maps:
-            if oak_cat_maps[identifier] != "" \
-                and id_and_cat_map[identifier] in \
-                    ["", "biolink:OntologyClass", "biolink:NamedThing"]:
+            if oak_cat_maps[identifier] != "" and id_and_cat_map[identifier] in [
+                "",
+                "biolink:OntologyClass",
+                "biolink:NamedThing",
+            ]:
                 update_cats[identifier] = oak_cat_maps[identifier]
             elif oak_cat_maps[identifier] != "":
                 mal_cat_list.append(identifier)
@@ -403,11 +392,11 @@ def load_sssom_maps(maps) -> tuple:
         obj = None
         obj_cat = None
         for k, v in row.items():
-            if k == 'subject_id':
+            if k == "subject_id":
                 subj = v
-            if k == 'object_id':
+            if k == "object_id":
                 obj = v
-            if k == 'object_category':
+            if k == "object_category":
                 obj_cat = v
             if subj and obj and subj != obj:
                 id_map[subj] = obj

@@ -16,32 +16,18 @@ def cli():
 
 
 @cli.command()
-@click.argument("input_path",
-                type=click.Path(exists=True))
-@click.option("--compressed",
-              "-c",
-              required=False,
-              default=False,
-              is_flag=True)
-@click.option("--map_path",
-              "-m",
-              required=False,
-              default="")
-@click.option("--update_categories",
-              "-u",
-              required=False,
-              default=False,
-              is_flag=True)
-@click.option("--oak_lookup",
-              "-l",
-              required=False,
-              default=False,
-              is_flag=True)
-def run(input_path: str,
-        compressed: bool,
-        map_path: str,
-        update_categories: bool,
-        oak_lookup: bool) -> None:
+@click.argument("input_path", type=click.Path(exists=True))
+@click.option("--compressed", "-c", required=False, default=False, is_flag=True)
+@click.option("--map_path", "-m", required=False, default="")
+@click.option("--update_categories", "-u", required=False, default=False, is_flag=True)
+@click.option("--oak_lookup", "-l", required=False, default=False, is_flag=True)
+def run(
+    input_path: str,
+    compressed: bool,
+    map_path: str,
+    update_categories: bool,
+    oak_lookup: bool,
+) -> None:
     """Process a graph, normalizing all nodes.
 
     :param input_path: Path to a directory containing
@@ -62,8 +48,9 @@ def run(input_path: str,
         maps = []
     elif isdir(map_path):
         print(f"Will use ID maps in {map_path}.")
-        maps = [join(map_path, fn) for fn in listdir(map_path) if
-                isfile(join(map_path, fn))]
+        maps = [
+            join(map_path, fn) for fn in listdir(map_path) if isfile(join(map_path, fn))
+        ]
     else:
         maps = [map_path]
 
@@ -71,14 +58,14 @@ def run(input_path: str,
         print("Will update categories.")
 
     if oak_lookup and not update_categories:
-        sys.exit("Cannot look up categories if not updating them. "
-                 "Please check the specified options.")
+        sys.exit(
+            "Cannot look up categories if not updating them. "
+            "Please check the specified options."
+        )
 
-    if clean_and_normalize_graph(input_path,
-                                 compressed,
-                                 maps,
-                                 update_categories,
-                                 oak_lookup):
+    if clean_and_normalize_graph(
+        input_path, compressed, maps, update_categories, oak_lookup
+    ):
         print("Complete.")
 
     return None
