@@ -107,21 +107,23 @@ def clean_and_normalize_graph(
                     line_split = (line.rstrip()).split("\t")
                     if mapping:
                         # Check for nodes to be remapped
-                        if line_split[0] in remap_these_nodes:
-                            new_node_id = remap_these_nodes[line_split[0]]
-                            line_split[0] = new_node_id
-                            changed_this_line = True
+                        # Do categories, then IDs
                         if update_categories:
                             if line_split[0] in remap_these_categories:
                                 new_node_cat = remap_these_categories[line_split[0]]
                                 line_split[1] = new_node_cat
                                 changed_this_line = True
+                            if using_sssom:
+                                if line_split[0] in recats:
+                                    line_split[1] = recats[line_split[0]]
+                                    changed_this_line = True
+                        if line_split[0] in remap_these_nodes:
+                            new_node_id = remap_these_nodes[line_split[0]]
+                            line_split[0] = new_node_id
+                            changed_this_line = True
                         if using_sssom:
                             if line_split[0] in recats:
                                 line_split[1] = recats[line_split[0]]
-                                changed_this_line = True
-                            if line_split[0] in remaps:
-                                line_split[0] = remaps[line_split[0]]
                                 changed_this_line = True
                     if changed_this_line:
                         mapcount = mapcount + 1
