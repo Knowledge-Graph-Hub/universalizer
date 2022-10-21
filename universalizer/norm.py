@@ -414,15 +414,33 @@ def obo_handle(old_id: str) -> str:
     :param old_id: str, old CURIE
     :return: str, new CURIE
     """
-    # Remove OBO prefix
-    new_id = old_id[4:]
+    # Check if this is an ID we should leave alone
+    # How do we know?
+    # It needs to lack anything we could use to
+    # render it as a CURIE
+    clues = ["_", ":"]
+    convertible = False
+    if "#" in old_id[4:]:
+        main_id = (old_id.split("#", 1)[0])[4:]
+    else:
+        main_id = old_id[4:]
+    for clue in clues:
+        if main_id.count(clue) == 1:
+            convertible = True
+            break
 
-    # Replace the first underscore with colon
-    new_id = new_id.replace("_", ":", 1)
+    if convertible:
+        # Remove OBO prefix
+        new_id = old_id[4:]
 
-    # Capitalize the prefix, but not the rest
-    # of the ID
-    split_id = new_id.split(":", 1)
-    new_id = f"{split_id[0].upper()}:{split_id[1]}"
+        # Replace the first underscore with colon
+        new_id = new_id.replace("_", ":", 1)
+
+        # Capitalize the prefix, but not the rest
+        # of the ID
+        split_id = new_id.split(":", 1)
+        new_id = f"{split_id[0].upper()}:{split_id[1]}"
+    else:
+        new_id = old_id
 
     return new_id
