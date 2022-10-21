@@ -317,10 +317,16 @@ def make_cat_maps(
                     remove_edges.append(edge_id)
                     update_cats[subj_node_id] = obj_node_id
             if pred.lower() == "biolink:related_to":
-                if (
-                    obj_node_id.startswith("STY")
-                    or (obj_node_id.split("/"))[-2] == "STY"
-                ):
+                this_is_sty = False
+                if obj_node_id.startswith("STY"):
+                    this_is_sty = True
+                try:
+                    if (obj_node_id.split("/"))[-2] == "STY":
+                        this_is_sty = True
+                except IndexError:
+                    pass
+
+                if this_is_sty:
                     remove_edges.append(edge_id)
                     update_cats[subj_node_id] = STY_TO_BIOLINK[obj_node_id]
 
