@@ -20,12 +20,19 @@ def cli():
 @click.option("--compressed", "-c", required=False, default=False, is_flag=True)
 @click.option("--map_path", "-m", required=False, default="")
 @click.option("--update_categories", "-u", required=False, default=False, is_flag=True)
+@click.option("--contexts", "-x",
+              callback=lambda _, __, x: x.split(" ") if x else [],
+              default=["obo", "bioregistry.upper"],
+              help="""Contexts to use for prefixes.
+              Space-delimited. Defaults to obo and bioregistry.upper.""",
+              )
 @click.option("--oak_lookup", "-l", required=False, default=False, is_flag=True)
 def run(
     input_path: str,
     compressed: bool,
     map_path: str,
     update_categories: bool,
+    contexts: list,
     oak_lookup: bool,
 ) -> None:
     """Process a graph, normalizing all nodes.
@@ -38,6 +45,7 @@ def run(
     a directory of SSSOM maps. Not recursive.
     :param update_categories: bool, if True, update and verify
     Biolink categories for all nodes
+    :contexts: list, contexts to use for prefixes
     :param oak_lookup: bool, if True, look up additional
     Biolink categories from OAK
     :return: None
@@ -64,7 +72,7 @@ def run(
         )
 
     if clean_and_normalize_graph(
-        input_path, compressed, maps, update_categories, oak_lookup
+        input_path, compressed, maps, update_categories, contexts, oak_lookup
     ):
         print("Complete.")
 

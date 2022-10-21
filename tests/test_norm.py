@@ -25,6 +25,7 @@ class TestNorm(TestCase):
                                       compressed=False,
                                       maps=[],
                                       update_categories=False,
+                                      contexts=["obo", "bioregistry.upper"],
                                       oak_lookup=False)
         )
 
@@ -35,6 +36,7 @@ class TestNorm(TestCase):
                                       compressed=False,
                                       maps=self.map_paths,
                                       update_categories=False,
+                                      contexts=["obo", "bioregistry.upper"],
                                       oak_lookup=False)
         )
 
@@ -45,5 +47,6 @@ class TestNorm(TestCase):
                                       compressed=False,
                                       maps=self.map_paths,
                                       update_categories=False,
+                                      contexts=["obo", "bioregistry.upper"],
                                       oak_lookup=False)
         )

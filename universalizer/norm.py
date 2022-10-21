@@ -14,7 +14,7 @@ from universalizer.oak_utils import get_cats_from_oak
 
 
 def clean_and_normalize_graph(
-    filepath, compressed, maps, update_categories, oak_lookup
+    filepath, compressed, maps, update_categories, contexts, oak_lookup
 ) -> bool:
     """
     Replace or remove node IDs or nodes as needed.
@@ -24,6 +24,7 @@ def clean_and_normalize_graph(
     :param maps: list of str filepaths to SSSOM maps
     :param update_categories: bool, if True, update and verify
     Biolink categories for all nodes
+    :param contexts: list, contexts to use for prefixes
     :param oak_lookup: bool, if True, look up additional
     Biolink categories from OAK
     :return: bool, True if successful
@@ -81,7 +82,7 @@ def clean_and_normalize_graph(
 
     # Now create the set of mappings to perform
 
-    remap_these_nodes = make_id_maps(nodepath, os.path.dirname(nodepath))
+    remap_these_nodes = make_id_maps(nodepath, os.path.dirname(nodepath), contexts)
 
     remove_these_edges: List[str] = []
 
@@ -165,7 +166,7 @@ def clean_and_normalize_graph(
     return success
 
 
-def make_id_maps(input_nodes: str, output_dir: str) -> dict:
+def make_id_maps(input_nodes: str, output_dir: str, contexts: list) -> dict:
     """
     Retrieve all entity identifiers for a single graph.
 
@@ -175,6 +176,7 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
     :param input_nodes: str, path to input nodefile
     :param output_dir: string of directory, location of unexpected id
     and update map file to be created
+    :param contexts: list, contexts to use for prefixes
     :return: dict, map of original node IDs to new node IDs
     """
     id_list = []
@@ -185,7 +187,7 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
     # TODO: expand reverse contexts beyond bijective maps
     # TODO: add more capitalization variants
 
-    curie_contexts = load_multi_context(["obo", "bioregistry.upper"])
+    curie_contexts = load_multi_context(contexts)
     all_contexts = curie_contexts.as_dict()
     all_contexts = {key: val for key, val in all_contexts.items()}
     curie_converter = Converter.from_prefix_map(all_contexts)
@@ -211,19 +213,10 @@ def make_id_maps(input_nodes: str, output_dir: str) -> dict:
     # Also checks if IDs with OBO prefixes should be something else.
     try:
         for identifier in id_list:
-            # See if there's an OBO prefix
+            # Fixes for the OBO space.
             if (identifier.split(":"))[0].upper() == "OBO":
+                update_ids[identifier] = obo_handle(identifier)
                 mal_id_list.append(identifier)
-                new_id = ((identifier[4:]).replace("_", ":")).upper()
-                # and check to see if this is referencing an owl file
-                # if so, try to remove
-                if ".OWL" in new_id:
-                    split_new_id = new_id.split(".OWL")
-                    new_id = split_new_id[1]
-                # May still have a char left over. Remove.
-                if new_id[0] in ["/", "#"]:
-                    new_id = new_id[1:]
-                update_ids[identifier] = new_id
                 continue
             try:
                 assert curie_converter.expand(identifier)
@@ -369,7 +362,7 @@ def make_cat_maps(
     return (update_cats, remove_edges)
 
 
-def load_sssom_maps(maps) -> tuple:
+def load_sssom_maps(maps: list) -> tuple:
     """
     Load all provided SSSOM maps.
 
@@ -406,3 +399,48 @@ def load_sssom_maps(maps) -> tuple:
     print(f"Loaded {len(cat_map)} category mappings.")
 
     return (id_map, cat_map)
+
+
+def obo_handle(old_id: str) -> str:
+    """
+    Process an OBO CURIE.
+
+    For CURIEs referencing the 'native'
+    namespace or another (e.g., OBO:ABC_1234)
+    they are converted (e.g., ABC:1234).
+    For OBO space (e.g., OBO:ABC1234)
+    they are left unchanged, including when
+    referring to an OWL (e.g., OBO:ABC.owl#1234).
+    :param old_id: str, old CURIE
+    :return: str, new CURIE
+    """
+    # Check if this is an ID we should leave alone
+    # How do we know?
+    # It needs to lack anything we could use to
+    # render it as a CURIE
+    clues = ["_", ":"]
+    convertible = False
+    if "#" in old_id[4:]:
+        main_id = (old_id.split("#", 1)[0])[4:]
+    else:
+        main_id = old_id[4:]
+    for clue in clues:
+        if main_id.count(clue) == 1:
+            convertible = True
+            break
+
+    if convertible:
+        # Remove OBO prefix
+        new_id = old_id[4:]
+
+        # Replace the first underscore with colon
+        new_id = new_id.replace("_", ":", 1)
+
+        # Capitalize the prefix, but not the rest
+        # of the ID
+        split_id = new_id.split(":", 1)
+        new_id = f"{split_id[0].upper()}:{split_id[1]}"
+    else:
+        new_id = old_id
+
+    return new_id
