@@ -414,7 +414,6 @@ def obo_handle(old_id: str) -> str:
     :param old_id: str, old CURIE
     :return: str, new CURIE
     """
-
     # Remove OBO prefix
     new_id = old_id[4:]
 
