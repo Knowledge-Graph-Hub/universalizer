@@ -328,7 +328,8 @@ def make_cat_maps(
 
                 if this_is_sty:
                     remove_edges.append(edge_id)
-                    update_cats[subj_node_id] = STY_TO_BIOLINK[obj_node_id]
+                    sty_curie = "STY:" + (obj_node_id.split("/"))[-1]
+                    update_cats[subj_node_id] = STY_TO_BIOLINK[sty_curie]
 
     # For each id, check its category in the nodelist first
     # then look it up in OAK if requested
