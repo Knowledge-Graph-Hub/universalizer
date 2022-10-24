@@ -50,7 +50,7 @@ def clean_and_normalize_graph(
         os.remove(filepath)
     else:
         for filename in os.listdir(filepath):
-            if filename.endswith(".tsv"):
+            if filename.endswith("nodes.tsv") or filename.endswith("edges.tsv"):
                 graph_file_paths.append(os.path.join(filepath, filename))
 
     if len(graph_file_paths) > 2:
