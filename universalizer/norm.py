@@ -96,6 +96,7 @@ def clean_and_normalize_graph(
     # Sometimes prefixes get capitalized, so we check for that too
     try:
         mapcount = 0
+        rem_edge_count = 0
         with open(nodepath, "r") as innodefile, open(edgepath, "r") as inedgefile:
             with open(outnodepath, "w") as outnodefile, open(
                 outedgepath, "w"
@@ -130,7 +131,6 @@ def clean_and_normalize_graph(
                     line = "\t".join(line_split) + "\n"
                     outnodefile.write(line)
                 for line in inedgefile:
-                    rem_edge_count = 0
                     line_split = (line.rstrip()).split("\t")
                     if line_split[0] in remove_these_edges:
                         rem_edge_count = rem_edge_count + 1
