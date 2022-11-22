@@ -131,7 +131,7 @@ STY_TO_BIOLINK = {
     "STY:T196": "biolink:SmallMolecule",
     "STY:T197": "biolink:ChemicalEntity",
     "STY:T200": "biolink:Drug",
-    "STY:T201": "biolink:Clinical Attribute",
+    "STY:T201": "biolink:ClinicalAttribute",
     "STY:T203": "biolink:Device",
     "STY:T204": "biolink:OrganismTaxon",
 }
