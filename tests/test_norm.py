@@ -26,6 +26,7 @@ class TestNorm(TestCase):
                                       maps=[],
                                       update_categories=False,
                                       contexts=["obo", "bioregistry.upper"],
+                                      namespace_cat_map = "",
                                       oak_lookup=False)
         )
 
@@ -37,6 +38,7 @@ class TestNorm(TestCase):
                                       maps=self.map_paths,
                                       update_categories=False,
                                       contexts=["obo", "bioregistry.upper"],
+                                      namespace_cat_map = "",
                                       oak_lookup=False)
         )
 
@@ -48,5 +50,6 @@ class TestNorm(TestCase):
                                       maps=self.map_paths,
                                       update_categories=False,
                                       contexts=["obo", "bioregistry.upper"],
+                                      namespace_cat_map = "",
                                       oak_lookup=False)
         )
