@@ -315,9 +315,16 @@ def make_cat_maps(
                     mal_cat_list.append(node_id)
 
     # if cat is OntologyClass or missing, set to NamedThing
+    # If using a namespace to category map,
+    # set here too, but not if it already have a
+    # more specific category
     for identifier in id_and_cat_map:
         if id_and_cat_map[identifier] in ["", "biolink:OntologyClass"]:
             update_cats[identifier] = "biolink:NamedThing"
+        if ns_map:
+            ns = identifier.split(":")[0]
+            if ns in ns_map and update_cats[identifier] == "biolink:NamedThing":
+                update_cats[identifier] = ns_map[ns]
 
     # Examine edges, obtain biolink:category relations
     # and those from UMLS semantic types (STY)
