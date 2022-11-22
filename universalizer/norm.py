@@ -14,7 +14,13 @@ from universalizer.oak_utils import get_cats_from_oak
 
 
 def clean_and_normalize_graph(
-    filepath, compressed, maps, update_categories, contexts, oak_lookup
+    filepath,
+    compressed,
+    maps,
+    update_categories,
+    contexts,
+    namespace_cat_map,
+    oak_lookup,
 ) -> bool:
     """
     Replace or remove node IDs or nodes as needed.
@@ -25,6 +31,10 @@ def clean_and_normalize_graph(
     :param update_categories: bool, if True, update and verify
     Biolink categories for all nodes
     :param contexts: list, contexts to use for prefixes
+    :param namespace_cat_map: str, path to a single tsv file
+    containing namespaces (e.g., CHEBI) and category names,
+    (e.g., biolink:ChemicalSubstance) such that the entirety
+    of the namespace should share that category.
     :param oak_lookup: bool, if True, look up additional
     Biolink categories from OAK
     :return: bool, True if successful
@@ -86,9 +96,16 @@ def clean_and_normalize_graph(
 
     remove_these_edges: List[str] = []
 
+    ns_map = {}
+    if namespace_cat_map != "":
+        with open(namespace_cat_map) as ns_map_file:
+            for line in ns_map_file:
+                splitline = (line.rstrip()).split("\t")
+                ns_map[splitline[0]] = splitline[1]
+
     if update_categories:
         remap_these_categories, remove_these_edges = make_cat_maps(
-            nodepath, edgepath, os.path.dirname(nodepath), use_oak
+            nodepath, edgepath, os.path.dirname(nodepath), ns_map, use_oak
         )
 
     print("Updating graph files...")
@@ -254,7 +271,7 @@ def make_id_maps(input_nodes: str, output_dir: str, contexts: list) -> dict:
 
 
 def make_cat_maps(
-    input_nodes: str, input_edges: str, output_dir: str, use_oak: bool
+    input_nodes: str, input_edges: str, output_dir: str, ns_map: dict, use_oak: bool
 ) -> Tuple[dict, list]:
     """
     Retrieve all categories for nodes in a single graph.
@@ -266,6 +283,7 @@ def make_cat_maps(
     :param input_edges: str, path to input edgefile
     :param output_dir: string of directory, location of unexpected id
     and update map file to be created
+    :param ns_map: dict, namespace to category maps
     :param use_oak: bool, if True, look up categories from OAK
     :return: tuple containing 1. dict of original node IDs to
     new node categories, and 2. list of lists of original subject,
@@ -297,9 +315,16 @@ def make_cat_maps(
                     mal_cat_list.append(node_id)
 
     # if cat is OntologyClass or missing, set to NamedThing
+    # If using a namespace to category map,
+    # set here too, but not if it already have a
+    # more specific category
     for identifier in id_and_cat_map:
         if id_and_cat_map[identifier] in ["", "biolink:OntologyClass"]:
             update_cats[identifier] = "biolink:NamedThing"
+        if ns_map:
+            ns = identifier.split(":")[0]
+            if ns in ns_map and update_cats[identifier] == "biolink:NamedThing":
+                update_cats[identifier] = ns_map[ns]
 
     # Examine edges, obtain biolink:category relations
     # and those from UMLS semantic types (STY)
