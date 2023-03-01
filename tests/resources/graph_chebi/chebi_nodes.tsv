@@ -8,4 +8,4 @@ CHEBI:9587	biolink:MolecularEntity	ticarcillin	A penicillin compound having a 6b
 CHEBI:17334	biolink:MolecularEntity	penicillin	Any member of the group of substituted penams containing two methyl substituents at position 2, a carboxylate substituent at position 3 and a carboxamido group at position 6.	Graph
 CHEBI:50904	biolink:biological_role_mixin	allergen	A chemical compound, or part thereof, which causes the onset of an allergic reaction by interacting with any of the molecular pathways involved in an allergy.	Graph
 CHEBI:18208	biolink:MolecularEntity	benzylpenicillin	A penicillin in which the substituent at position 6 of the penam ring is a phenylacetamido group.	Graph
-chebi:88187	biolink:MolecularEntity	penicillin allergen	Any penicillin which causes the onset of an allergic reaction.	Graph
+OBO:CHEBI_88187	biolink:MolecularEntity	penicillin allergen	Any penicillin which causes the onset of an allergic reaction.	Graph
