@@ -70,7 +70,7 @@ class TestNorm(TestCase):
         a node ID and its category are updated AND category
         edges must be removed. This happens with PHENIO.
         """
-        with open(self.chebi_graph_edges,"r") as infile:
+        with open(self.chebi_graph_edges, "r") as infile:
             beforelen = len(infile.readlines())
         self.assertTrue(
             clean_and_normalize_graph(
@@ -83,6 +83,6 @@ class TestNorm(TestCase):
                 oak_lookup=False,
             )
         )
-        with open(self.chebi_graph_edges,"r") as infile:
+        with open(self.chebi_graph_edges, "r") as infile:
             afterlen = len(infile.readlines())
         self.assertLess(afterlen, beforelen, "Edges not removed?")
