@@ -1,0 +1,12 @@
+id	subject	predicate	object	category	relation	aggregator_knowledge_source	knowledge_source	primary_knowledge_source
+urn:uuid:71d1f72d-8f6d-49ad-a26f-63255bef0793	CHEBI:18208	biolink:subclass_of	CHEBI:88187			infores:phenio	Graph	infores:chebi
+urn:uuid:d6ea7259-a363-4b7c-b20e-dd7f1b775840	CHEBI:2676	biolink:subclass_of	CHEBI:88187			infores:phenio	Graph	infores:chebi
+urn:uuid:4b64cf4d-1050-4a05-8ea4-fe0ea6bb2fd7	CHEBI:28971	biolink:subclass_of	CHEBI:88187			infores:phenio	Graph	infores:chebi
+urn:uuid:e4a70bed-dfc6-4fbe-850b-bbeb54dd00b4	CHEBI:3393	biolink:subclass_of	CHEBI:88187			infores:phenio	Graph	infores:chebi
+urn:uuid:d9a4bf37-bcf5-484d-804a-55b691005cc5	CHEBI:6827	biolink:subclass_of	CHEBI:88187			infores:phenio	Graph	infores:chebi
+urn:uuid:bb03060b-e29a-4be5-9cd6-08a1181257fd	CHEBI:8232	biolink:subclass_of	CHEBI:88187			infores:phenio	Graph	infores:chebi
+urn:uuid:e937b889-ac98-4f67-9337-c9e36545fd4e	CHEBI:88187	biolink:subclass_of	CHEBI:17334			infores:phenio	Graph	infores:chebi
+urn:uuid:5c3c797e-0698-458d-8a18-2bdecfdf17c5	CHEBI:88187	biolink:related_to	CHEBI:50904			infores:phenio	Graph	infores:chebi
+urn:uuid:d22a9852-ef6a-453f-be09-ff10e4eb5746	CHEBI:88187	biolink:category	biolink:NamedThing			infores:phenio	Graph	infores:chebi
+urn:uuid:9fa54d3d-46dd-4ffb-81bf-9ce0b8956e2f	CHEBI:88187	biolink:category	biolink:OntologyClass			infores:phenio	Graph	infores:chebi
+urn:uuid:bc457315-4c0f-473d-b308-b1014fdda277	CHEBI:9587	biolink:subclass_of	CHEBI:88187			infores:phenio	Graph	infores:chebi
