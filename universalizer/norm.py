@@ -33,7 +33,7 @@ def clean_and_normalize_graph(
     :param contexts: list, contexts to use for prefixes
     :param namespace_cat_map: str, path to a single tsv file
     containing namespaces (e.g., CHEBI) and category names,
-    (e.g., biolink:ChemicalSubstance) such that the entirety
+    (e.g., biolink:ChemicalEntity) such that the entirety
     of the namespace should share that category.
     :param oak_lookup: bool, if True, look up additional
     Biolink categories from OAK
@@ -342,8 +342,8 @@ def make_cat_maps(
             pred = splitline[2]
             obj_node_id = splitline[3]
             if pred.lower() == "biolink:category":
+                remove_edges.append(edge_id)
                 if obj_node_id not in ["biolink:NamedThing", "biolink:OntologyClass"]:
-                    remove_edges.append(edge_id)
                     update_cats[subj_node_id] = obj_node_id
             if pred.lower() == "biolink:related_to":
                 this_is_sty = False
