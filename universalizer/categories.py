@@ -1,5 +1,9 @@
 """Categories more broadly used than those defined in SSSOM maps."""
 
+# These categories aren't changed if they're already
+# specified in the nodefile.
+RETAINED_CAT_LIST = ["biolink:PhenotypicFeature"]
+
 STY_TO_BIOLINK = {
     "STY:T001": "biolink:OrganismTaxon",
     "STY:T002": "biolink:OrganismTaxon",
