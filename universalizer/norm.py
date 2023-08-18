@@ -9,12 +9,9 @@ from prefixmaps.io.parser import load_multi_context  # type: ignore
 from sssom.parsers import parse_sssom_table  # type: ignore
 from sssom.util import MappingSetDataFrame  # type: ignore
 
-from universalizer.categories import STY_TO_BIOLINK
+from universalizer.categories import RETAINED_CAT_LIST, STY_TO_BIOLINK
 from universalizer.oak_utils import get_cats_from_oak
 
-# These categories aren't changed if they're already
-# specified in the nodefile.
-RETAINED_CAT_LIST = ["biolink:PhenotypicFeature"]
 
 def clean_and_normalize_graph(
     filepath,
