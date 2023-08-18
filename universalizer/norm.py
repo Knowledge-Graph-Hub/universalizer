@@ -341,7 +341,7 @@ def make_cat_maps(
             splitline = line.rstrip().split("\t")
             edge_id = splitline[0]
             subj_node_id = splitline[1]
-            if subj_node_id in id_and_cat_map:  
+            if subj_node_id in id_and_cat_map:
                 # We may find a node here not mentioned in the nodefile,
                 # like if the node ID needs correction.
                 if id_and_cat_map[subj_node_id] in RETAINED_CAT_LIST:
