@@ -12,6 +12,9 @@ from sssom.util import MappingSetDataFrame  # type: ignore
 from universalizer.categories import STY_TO_BIOLINK
 from universalizer.oak_utils import get_cats_from_oak
 
+# These categories aren't changed if they're already
+# specified in the nodefile.
+RETAINED_CAT_LIST = ["biolink:PhenotypicFeature"]
 
 def clean_and_normalize_graph(
     filepath,
@@ -332,13 +335,17 @@ def make_cat_maps(
 
     # Examine edges, obtain biolink:category relations
     # and those from UMLS semantic types (STY)
-    # These take precedence over nodelist category assignments
+    # These take precedence over nodelist category assignments,
+    # except in cases where we don't want to overwrite them.
+    # Those are in the RETAINED_CAT_LIST.
     with open(input_edges, "r") as edgefile:
         edgefile.readline()
         for line in edgefile:
             splitline = line.rstrip().split("\t")
             edge_id = splitline[0]
             subj_node_id = splitline[1]
+            if id_and_cat_map[subj_node_id] in RETAINED_CAT_LIST:
+                continue
             pred = splitline[2]
             obj_node_id = splitline[3]
             if pred.lower() == "biolink:category":
