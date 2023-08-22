@@ -4,10 +4,10 @@ import os
 import tarfile
 from typing import Dict, List, Tuple
 
-from curies import Converter  # type: ignore
-from prefixmaps.io.parser import load_multi_context  # type: ignore
-from sssom.parsers import parse_sssom_table  # type: ignore
-from sssom.util import MappingSetDataFrame  # type: ignore
+from curies import Converter
+from prefixmaps.io.parser import load_multi_context
+from sssom.parsers import parse_sssom_table
+from sssom.util import MappingSetDataFrame 
 
 from universalizer.categories import (RESTRICTED_CAT_LIST, RETAINED_CAT_LIST,
                                       STY_TO_BIOLINK)
