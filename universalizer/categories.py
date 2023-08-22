@@ -1,5 +1,10 @@
 """Categories more broadly used than those defined in SSSOM maps."""
 
+# These categories aren't assigned unless the only
+# other available categories for a node are root
+# categories like NamedThing.
+RESTRICTED_CAT_LIST = ["biolink:PhenotypicQuality"]
+
 # These categories aren't changed if they're already
 # specified in the nodefile.
 RETAINED_CAT_LIST = ["biolink:PhenotypicFeature"]

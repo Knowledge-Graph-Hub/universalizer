@@ -4,12 +4,13 @@ import os
 import tarfile
 from typing import Dict, List, Tuple
 
-from curies import Converter  # type: ignore
-from prefixmaps.io.parser import load_multi_context  # type: ignore
-from sssom.parsers import parse_sssom_table  # type: ignore
-from sssom.util import MappingSetDataFrame  # type: ignore
+from curies import Converter
+from prefixmaps.io.parser import load_multi_context
+from sssom.parsers import parse_sssom_table
+from sssom.util import MappingSetDataFrame
 
-from universalizer.categories import RETAINED_CAT_LIST, STY_TO_BIOLINK
+from universalizer.categories import (RESTRICTED_CAT_LIST, RETAINED_CAT_LIST,
+                                      STY_TO_BIOLINK)
 from universalizer.oak_utils import get_cats_from_oak
 
 
@@ -348,10 +349,24 @@ def make_cat_maps(
                     continue
             pred = splitline[2]
             obj_node_id = splitline[3]
+            # If a category is defined through a relation, get the category name,
+            # but note that *multiple such relations may exist*.
+            # So we check to see if we have a category to map this way first,
+            # and don't assign if it's in RESTRICTED_CAT_LIST,
+            # unless we don't have other categories to update to.
             if pred.lower() == "biolink:category":
                 remove_edges.append(edge_id)
                 if obj_node_id not in ["biolink:NamedThing", "biolink:OntologyClass"]:
-                    update_cats[subj_node_id] = obj_node_id
+                    if (
+                        len(update_cats[subj_node_id]) > 0
+                        and obj_node_id not in RESTRICTED_CAT_LIST
+                    ):
+                        update_cats[subj_node_id] = obj_node_id
+                    elif (
+                        len(update_cats[subj_node_id]) == 0
+                        and obj_node_id in RESTRICTED_CAT_LIST
+                    ):
+                        update_cats[subj_node_id] = obj_node_id
             if pred.lower() == "biolink:related_to":
                 this_is_sty = False
                 if obj_node_id.startswith("STY"):
