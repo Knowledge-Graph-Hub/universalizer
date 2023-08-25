@@ -354,18 +354,22 @@ def make_cat_maps(
             # So we check to see if we have a category to map this way first,
             # and don't assign if it's in RESTRICTED_CAT_LIST,
             # unless we don't have other categories to update to.
+            # Note that a node may not be in update_cats
             if pred.lower() == "biolink:category":
                 remove_edges.append(edge_id)
                 if obj_node_id not in ["biolink:NamedThing", "biolink:OntologyClass"]:
-                    if (
-                        len(update_cats[subj_node_id]) > 0
-                        and obj_node_id not in RESTRICTED_CAT_LIST
-                    ):
-                        update_cats[subj_node_id] = obj_node_id
-                    elif (
-                        len(update_cats[subj_node_id]) == 0
-                        and obj_node_id in RESTRICTED_CAT_LIST
-                    ):
+                    if subj_node_id in update_cats:
+                        if (
+                            len(update_cats[subj_node_id]) > 0
+                            and obj_node_id not in RESTRICTED_CAT_LIST
+                        ):
+                            update_cats[subj_node_id] = obj_node_id
+                        elif (
+                            len(update_cats[subj_node_id]) == 0
+                            and obj_node_id in RESTRICTED_CAT_LIST
+                        ):
+                            update_cats[subj_node_id] = obj_node_id
+                    else:
                         update_cats[subj_node_id] = obj_node_id
             if pred.lower() == "biolink:related_to":
                 this_is_sty = False
