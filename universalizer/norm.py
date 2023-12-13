@@ -4,6 +4,7 @@ import os
 import tarfile
 from typing import Dict, List, Tuple
 
+import pandas as pd
 from curies import Converter
 from prefixmaps.io.parser import load_multi_context
 from sssom.parsers import parse_sssom_table
@@ -435,7 +436,8 @@ def load_sssom_maps(maps: list) -> tuple:
     first is all subject_id:object_id,
     second is all subject_id:object_category
     """
-    all_maps = MappingSetDataFrame()
+    df = pd.DataFrame()
+    all_maps = MappingSetDataFrame(df=df)
     for filepath in maps:
         msdf = parse_sssom_table(filepath)
         all_maps = all_maps.merge(msdf)

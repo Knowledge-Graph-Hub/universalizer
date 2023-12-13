@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "universalizer"
-version = "0.0.9"
+version = "0.0.11"
 description = "Provides functions for knowledge graph cleanup and identifier normalization."
 authors = ["caufieldjh <j.harry.caufield@gmail.com>"]
 license = "BSD-3"
@@ -21,7 +21,6 @@ click = "^8.1.3"
 kgx = ">=2.0.0"
 oaklib = ">=0.5.10"
 prefixmaps = ">=0.1.5"
-sssom = "^0.3.32"
 
 [tool.poetry.dev-dependencies]
 
