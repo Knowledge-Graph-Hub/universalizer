@@ -1,5 +1,13 @@
 """CLI for universalizer."""
 
+import sys
+from os import listdir
+from os.path import isdir, isfile, join
+
+import click
+
+from universalizer.norm import clean_and_normalize_graph
+
 """
 This module provides a command-line interface for the universalizer tool, which processes knowledge graphs
 by normalizing nodes, updating categories, and applying ID mappings.
@@ -11,14 +19,6 @@ Functions:
     cli: Main entry point for the CLI.
     run: Process a graph with various normalization options.
 """
-import sys
-from os import listdir
-from os.path import isdir, isfile, join
-
-import click
-
-from universalizer.norm import clean_and_normalize_graph
-
 
 @click.group()
 def cli():
