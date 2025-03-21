@@ -9,7 +9,8 @@ import click
 from universalizer.norm import clean_and_normalize_graph
 
 """
-This module provides a command-line interface for the universalizer tool, which processes knowledge graphs
+This module provides a command-line interface for the universalizer tool,
+which processes knowledge graphs
 by normalizing nodes, updating categories, and applying ID mappings.
 
 Commands:
@@ -19,6 +20,7 @@ Functions:
     cli: Main entry point for the CLI.
     run: Process a graph with various normalization options.
 """
+
 
 @click.group()
 def cli():
